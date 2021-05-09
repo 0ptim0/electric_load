@@ -1,0 +1,1 @@
+void float2digits(float number, int (&dig)[4], int precision, int digits);

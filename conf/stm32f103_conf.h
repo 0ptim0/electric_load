@@ -21,3 +21,4 @@
 
 #include "indicator.h"
 #include "init.h"
+#include "convert.h"
