@@ -1,12 +1,13 @@
 #include <stm32f103xb.h>
-#define a ind.segment[0]
-#define b ind.segment[1]
-#define c ind.segment[2]
-#define d ind.segment[3]
-#define e ind.segment[4]
-#define f ind.segment[5]
-#define g ind.segment[6]
-#define dot ind.segment[7]
+
+#define a   0b00000001
+#define b   0b00000010
+#define c   0b00000100
+#define d   0b00001000
+#define e   0b00010000
+#define f   0b00100000
+#define g   0b01000000
+#define dot 0b10000000
 
 typedef struct pin_struct{
     GPIO_TypeDef *GPIOx;
@@ -24,9 +25,10 @@ class indicator {
     private:
         void ClockInit(pin_t pin);
         void ModeInit(pin_t pin);
-        void Set(pin_t pin);
-        void Reset(pin_t pin);
+        void PrintDigit(int pin);
+        void Set(int pin);
         void ResetAll(void);
+        void OnDigit(int digit);
         int dig[4] = {0, 0, 0, 0};
     public:
         indicator_t ind;
