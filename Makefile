@@ -105,7 +105,7 @@ erase:
 	st-flash erase
 
 gdb-server-ocd:
-	$(OPENOCD) -f $(OPENOCD_SCRIPT_DIR)/board/bluepill_v2.cfg
+	$(OPENOCD) -f $(OPENOCD_SCRIPT_DIR)/board/bluepill.cfg
 
 gdb-server-st:
 	st-util

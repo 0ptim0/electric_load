@@ -21,7 +21,5 @@ void rcc_config(void) {
 /** GPIO INIT 
  *  PC13 - LED */
 void gpio_config(void) {
-    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOC);
-    LL_GPIO_SetPinMode(GPIOC, LL_GPIO_PIN_13, LL_GPIO_MODE_OUTPUT);
 
 }

@@ -27,9 +27,10 @@ class indicator {
         void ModeInit(pin_t pin);
         void PrintDigit(int pin);
         void Set(int pin);
-        void ResetAll(void);
-        void OnDigit(int digit);
+        void ResetAllSegments(void);
+        void ChangeDigit(void);
         int dig[4] = {0, 0, 0, 0};
+        int now = -1;
     public:
         indicator_t ind;
         indicator() {

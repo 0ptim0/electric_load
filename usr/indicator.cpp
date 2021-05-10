@@ -1,5 +1,7 @@
 #include "stm32f103_conf.h"
 
+// TODO: optimizate code
+
 void indicator::Init(void) {
     for(int i = 0; i < ind.digits; i++) {
         ClockInit(ind.digit[i]);
@@ -26,40 +28,52 @@ void indicator::SetDigits(int dig) {
 void indicator::Print(float number) {
     float2digits(number, dig, ind.precision, ind.digits);
     for(int i = 0; i < ind.digits; i++) {
+        ChangeDigit();
         PrintDigit(dig[i]);
-        vTaskDelay(10);
+        vTaskDelay(5);
     }
 }
 
+// TODO: add norm decoder
 void indicator::PrintDigit(int digit) {
-    ResetAll();
+    ResetAllSegments();
     switch(digit) {
         case 0:
             Set(a | b | c | d | e | f);
+            break;
         case 1:
             Set(b | c);
+            break;
         case 2:
             Set(a | b | g | e | d);
+            break;
         case 3:
             Set(a | b | c | d | g);
+            break;
         case 4:
             Set(b | c | f | g);
+            break;
         case 5:
             Set(a | c | d | f | g);
+            break;
         case 6:
             Set(a | c | d | e | f | g);
+            break;
         case 7:
             Set(a | b | c);
+            break;
         case 8:
             Set(a | b | c | d | e | f | g);
+            break;
         case 9:
             Set(a | b | c | d | f | g);
+            break;
     }
 }
 
 void indicator::Set(int pin) {
     for(int i = 0; i < 8; i++) {
-        if(pin | (1 << i)) {
+        if(pin & (1 << i)) {
             LL_GPIO_SetOutputPin(ind.segment[i].GPIOx, ind.segment[i].LL_PIN);
         }
         else {
@@ -68,7 +82,17 @@ void indicator::Set(int pin) {
     }
 }
 
-void indicator::ResetAll(void) {
+void indicator::ChangeDigit(void) {
+    LL_GPIO_ResetOutputPin(ind.digit[now].GPIOx, ind.digit[now].LL_PIN);
+    if(now == (ind.digits - 1)) {
+        now = 0;
+    } else {
+        now++;
+    }
+    LL_GPIO_SetOutputPin(ind.digit[now].GPIOx, ind.digit[now].LL_PIN);
+}
+
+void indicator::ResetAllSegments(void) {
     Set(0b00000000);
 }
 
