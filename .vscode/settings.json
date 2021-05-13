@@ -17,4 +17,11 @@
         "cstdint": "cpp",
         "typeinfo": "cpp"
     },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/optim/stm32/projects/electric_load/build",
+            "binaryPath": "/home/optim/stm32/projects/electric_load/build/electric_load.elf",
+            "binaryArgs": []
+        }
+    ],
 }
