@@ -1,4 +1,5 @@
 #include <stm32f103xb.h>
+#include "gpio.h"
 
 #define a   0b00000001
 #define b   0b00000010
@@ -8,11 +9,6 @@
 #define f   0b00100000
 #define g   0b01000000
 #define dot 0b10000000
-
-typedef struct pin_struct{
-    GPIO_TypeDef *GPIOx;
-    int LL_PIN;
-} pin_t;
 
 typedef struct indicator_struct{
     pin_t segment[8]; // a,b,c,d,e,f,d,dot
