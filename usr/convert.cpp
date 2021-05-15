@@ -1,4 +1,4 @@
-// TODO: work with dot: Think about form variables (bin or dec) and return value or change by link.
+// TODO work with dot: Think about form variables (bin or dec) and return value or change by link.
 void float2digits(float number, int (&dig)[4], int precision, int digits) {
     int overflow = 0;
     switch (precision) {

@@ -1,6 +1,6 @@
 #include "stm32f103_conf.h"
 
-// TODO: optimizate code
+// TODO optimizate code
 
 void indicator::Init(void) {
     for(int i = 0; i < ind.digits; i++) {

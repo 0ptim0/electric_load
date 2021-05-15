@@ -10,6 +10,7 @@
 #include "stm32f1xx_ll_utils.h"
 #include "stm32f1xx_ll_cortex.h"
 #include "stm32f1xx_ll_i2c.h"
+#include "stm32f1xx_ll_adc.h"
 
 /** FreeRTOS */
 #include "FreeRTOS.h"
