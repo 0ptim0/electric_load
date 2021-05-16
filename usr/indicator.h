@@ -10,7 +10,7 @@
 #define g   0b01000000
 #define dot 0b10000000
 
-typedef struct indicator_struct{
+typedef struct {
     pin_t segment[8]; // a,b,c,d,e,f,d,dot
     pin_t digit[4];
     int digits;
@@ -19,8 +19,7 @@ typedef struct indicator_struct{
 
 class indicator {
     private:
-        void ClockInit(pin_t pin);
-        void ModeInit(pin_t pin);
+        void PinInit(pin_t pin);
         void PrintDigit(int pin);
         void Set(int pin);
         void ResetAllSegments(void);

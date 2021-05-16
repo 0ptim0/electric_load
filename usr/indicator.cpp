@@ -4,12 +4,10 @@
 
 void indicator::Init(void) {
     for(int i = 0; i < ind.digits; i++) {
-        ClockInit(ind.digit[i]);
-        ModeInit(ind.digit[i]);
+        PinInit(ind.digit[i]);
     }
     for(int i = 0; i < 8; i++) {
-        ClockInit(ind.segment[i]);
-        ModeInit(ind.segment[i]);
+        PinInit(ind.segment[i]);
     }
 }
 
@@ -96,13 +94,7 @@ void indicator::ResetAllSegments(void) {
     Set(0b00000000);
 }
 
-void indicator::ModeInit(pin_t pin) {
-    LL_GPIO_SetPinMode(pin.GPIOx, pin.LL_PIN, LL_GPIO_MODE_OUTPUT);
-    LL_GPIO_SetPinOutputType(pin.GPIOx, pin.LL_PIN, LL_GPIO_OUTPUT_PUSHPULL);
-    LL_GPIO_SetPinSpeed(pin.GPIOx, pin.LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
-}
-
-void indicator::ClockInit(pin_t pin) {
+void indicator::PinInit(pin_t pin) {
     if(pin.GPIOx == GPIOA) {
         LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
     } else if(pin.GPIOx == GPIOB) {
@@ -114,4 +106,7 @@ void indicator::ClockInit(pin_t pin) {
     } else if(pin.GPIOx == GPIOE) {
         LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOE);
     }
+    LL_GPIO_SetPinMode(pin.GPIOx, pin.LL_PIN, LL_GPIO_MODE_OUTPUT);
+    LL_GPIO_SetPinOutputType(pin.GPIOx, pin.LL_PIN, LL_GPIO_OUTPUT_PUSHPULL);
+    LL_GPIO_SetPinSpeed(pin.GPIOx, pin.LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
 }
