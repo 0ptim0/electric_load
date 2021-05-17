@@ -11,6 +11,7 @@
 #include "stm32f1xx_ll_cortex.h"
 #include "stm32f1xx_ll_i2c.h"
 #include "stm32f1xx_ll_adc.h"
+#include "stm32f1xx_ll_dma.h"
 
 /** FreeRTOS */
 #include "FreeRTOS.h"

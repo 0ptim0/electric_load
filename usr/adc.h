@@ -2,7 +2,7 @@
 #include "gpio.h"
 
 #define SAMPLING_TIME LL_ADC_SAMPLINGTIME_239CYCLES_5
-#define USE_DMA
+#define USE_DMA 1
 
 typedef struct {
     pin_t channel[15];
@@ -12,7 +12,7 @@ typedef struct {
 typedef struct {
     ADC_TypeDef *ADC;
     pin_t channel[15];
-    int channel_mask;
+    uint32_t data[15];
 } adc_t;
 
 class adc {
@@ -34,5 +34,4 @@ class adc {
             adc_conf.channel[9] = {GPIOB, LL_GPIO_PIN_1};
         }
         void Init(void);
-        void EnableChannel(int channel);
 };
