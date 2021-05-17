@@ -3,24 +3,22 @@
 #include "adc.h"
 
 void adc::Init(void){
-    if(adc.ADC == ADC1) {
+    if(adc_conf.ADC == ADC1) {
         LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_ADC1);
-    } else if(adc.ADC == ADC2) {
+    } else if(adc_conf.ADC == ADC2) {
         LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_ADC2);
     }
+    
+}
+
+void adc::EnableChannel(int channel) {
+    adc_conf.channel_mask |= 1 << channel;
+    
 }
 
 void adc::ConfigInit(void) {
-    LL_ADC_SetChannelSamplingTime(adc.ADC, LL_ADC_CHANNEL_0, SAMPLING_TIME);
-    LL_ADC_SetChannelSamplingTime(adc.ADC, LL_ADC_CHANNEL_1, SAMPLING_TIME);
-    LL_ADC_SetChannelSamplingTime(adc.ADC, LL_ADC_CHANNEL_2, SAMPLING_TIME);
-    LL_ADC_SetChannelSamplingTime(adc.ADC, LL_ADC_CHANNEL_3, SAMPLING_TIME);
-    LL_ADC_SetChannelSamplingTime(adc.ADC, LL_ADC_CHANNEL_4, SAMPLING_TIME);
-    LL_ADC_SetChannelSamplingTime(adc.ADC, LL_ADC_CHANNEL_5, SAMPLING_TIME);
-    LL_ADC_SetChannelSamplingTime(adc.ADC, LL_ADC_CHANNEL_6, SAMPLING_TIME);
-    LL_ADC_SetChannelSamplingTime(adc.ADC, LL_ADC_CHANNEL_7, SAMPLING_TIME);
-    LL_ADC_SetChannelSamplingTime(adc.ADC, LL_ADC_CHANNEL_8, SAMPLING_TIME);
-    LL_ADC_SetChannelSamplingTime(adc.ADC, LL_ADC_CHANNEL_9, SAMPLING_TIME);
+    LL_ADC_SetChannelSamplingTime(adc_conf.ADC, LL_ADC_CHANNEL_8, SAMPLING_TIME);
+    LL_ADC_SetChannelSamplingTime(adc_conf.ADC, LL_ADC_CHANNEL_9, SAMPLING_TIME);
 }
 
 void adc::PinInit(pin_t pin) {
