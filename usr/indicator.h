@@ -22,6 +22,7 @@ class indicator {
         void PinInit(pin_t pin);
         void PrintDigit(int pin);
         void Set(int pin);
+        void SetDot(void);
         void ResetAllSegments(void);
         void ChangeDigit(void);
         int dig[4] = {0, 0, 0, 0};

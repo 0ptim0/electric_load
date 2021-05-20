@@ -28,6 +28,9 @@ void indicator::Print(float number) {
     for(int i = 0; i < ind.digits; i++) {
         ChangeDigit();
         PrintDigit(dig[i]);
+        if(ind.precision == i) {
+            SetDot();
+        }
         vTaskDelay(5);
     }
 }
@@ -79,6 +82,11 @@ void indicator::Set(int pin) {
         }
     }
 }
+
+void indicator::SetDot(void) {
+    LL_GPIO_SetOutputPin(ind.segment[7].GPIOx, ind.segment[7].LL_PIN);
+}
+
 
 void indicator::ChangeDigit(void) {
     LL_GPIO_ResetOutputPin(ind.digit[now].GPIOx, ind.digit[now].LL_PIN);

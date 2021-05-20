@@ -1,13 +1,9 @@
 #include "stm32f103xb.h"
 #include "gpio.h"
+#pragma once
 
 #define SAMPLING_TIME LL_ADC_SAMPLINGTIME_239CYCLES_5
 #define USE_DMA 1
-
-typedef struct {
-    pin_t channel[15];
-
-} adc_pin_t;
 
 typedef struct {
     ADC_TypeDef *ADC;
@@ -22,6 +18,7 @@ class adc {
         void ConfigInit(void);
     public:
         adc() {
+            adc_conf.ADC = ADC1;
             adc_conf.channel[0] = {GPIOA, LL_GPIO_PIN_0};
             adc_conf.channel[1] = {GPIOA, LL_GPIO_PIN_1};
             adc_conf.channel[2] = {GPIOA, LL_GPIO_PIN_2};
