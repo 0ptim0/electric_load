@@ -18,9 +18,9 @@ void adc::ConfigInit(void) {
     LL_ADC_SetDataAlignment(adc_conf.ADC, LL_ADC_DATA_ALIGN_RIGHT);
     LL_ADC_SetSequencersScanMode(adc_conf.ADC, LL_ADC_SEQ_SCAN_DISABLE);
     LL_ADC_REG_SetSequencerLength(adc_conf.ADC, LL_ADC_REG_SEQ_SCAN_DISABLE); // TODO In argument
-    if(0) { // TODO DMA in other class
-        LL_ADC_REG_SetDMATransfer(adc_conf.ADC, LL_ADC_REG_DMA_TRANSFER_UNLIMITED);
+    if(USE_DMA) { // TODO DMA in other class
         LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
+        LL_ADC_REG_SetDMATransfer(adc_conf.ADC, LL_ADC_REG_DMA_TRANSFER_UNLIMITED);
         LL_DMA_SetPeriphAddress(DMA1, LL_DMA_CHANNEL_1, LL_ADC_DMA_GetRegAddr(adc_conf.ADC, LL_ADC_DMA_REG_REGULAR_DATA));
         LL_DMA_SetMemoryAddress(DMA1, LL_DMA_CHANNEL_1, (uint32_t)&(adc_conf.data));
         LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
@@ -31,7 +31,9 @@ void adc::ConfigInit(void) {
         LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MDATAALIGN_HALFWORD);
         LL_DMA_SetMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MODE_CIRCULAR);
         LL_DMA_SetChannelPriorityLevel(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PRIORITY_HIGH);
+        NVIC_SetPriority(DMA1_Channel1_IRQn, 11);
         NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+        //LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_1);
         LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_1);
     }
     LL_ADC_REG_SetTriggerSource(adc_conf.ADC, LL_ADC_REG_TRIG_SOFTWARE);

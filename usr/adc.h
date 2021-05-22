@@ -13,10 +13,10 @@ typedef struct {
 
 class adc {
     private:
-        adc_t adc_conf;
         void PinInit(pin_t pin);
         void ConfigInit(void);
     public:
+        adc_t adc_conf;
         adc() {
             adc_conf.ADC = ADC1;
             adc_conf.channel[0] = {GPIOA, LL_GPIO_PIN_0};

@@ -17,6 +17,11 @@ void float2digits(float number, int (&dig)[4], int precision, int digits) {
             number *= 10;
             break;
     }
+
+    if((number - (int)number) >= 0.5) {
+        number += 1;
+    }
+    
     dig[3] = ((int)number / 1000);
     dig[2] = ((int)number - dig[3] * 1000) / 100;
     dig[1] = ((int)number - dig[3] * 1000 - dig[2] * 100) / 10;
