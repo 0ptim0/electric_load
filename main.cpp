@@ -1,4 +1,4 @@
-#include "stm32f103_conf.h"
+#include "stm32_conf.h"
 
 indicator Indicator;
 adc adc1;

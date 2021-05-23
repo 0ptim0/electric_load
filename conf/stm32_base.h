@@ -12,6 +12,7 @@
 #include "stm32f1xx_ll_i2c.h"
 #include "stm32f1xx_ll_adc.h"
 #include "stm32f1xx_ll_dma.h"
+#include "stm32f1xx_ll_usart.h"
 
 /** FreeRTOS */
 #include "FreeRTOS.h"
@@ -19,9 +20,3 @@
 #include "croutine.h"
 #include "timers.h"
 #include "semphr.h"
-/** USR */
-
-#include "indicator.h"
-#include "init.h"
-#include "convert.h"
-#include "adc.h"

@@ -1,4 +1,4 @@
-#include <stm32f103xb.h>
+#include "stm32_base.h"
 #pragma once
 
 typedef struct {

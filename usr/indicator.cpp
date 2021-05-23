@@ -1,4 +1,5 @@
-#include "stm32f103_conf.h"
+#include "indicator.h"
+#include "convert.h"
 
 // TODO optimizate code
 

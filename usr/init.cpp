@@ -1,4 +1,4 @@
-#include "stm32f103_conf.h"
+#include "stm32_conf.h"
 
 void rcc_config(void) {
     LL_FLASH_SetLatency(LL_FLASH_LATENCY_2);
@@ -10,8 +10,9 @@ void rcc_config(void) {
     while(LL_RCC_PLL_IsReady() != 1);
 
     LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
-    LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
+    LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_2);
     LL_RCC_SetAPB2Prescaler(LL_RCC_APB1_DIV_1);
+    LL_RCC_SetADCClockSource(LL_RCC_ADC_CLKSOURCE);
     LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
     while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL);
 }

@@ -1,4 +1,4 @@
-#include "stm32f103xb.h"
+#include "stm32_base.h"
 #include "gpio.h"
 #pragma once
 
@@ -12,23 +12,23 @@ typedef struct {
 } adc_t;
 
 class adc {
-    private:
-        void PinInit(pin_t pin);
-        void ConfigInit(void);
-    public:
-        adc_t adc_conf;
-        adc() {
-            adc_conf.ADC = ADC1;
-            adc_conf.channel[0] = {GPIOA, LL_GPIO_PIN_0};
-            adc_conf.channel[1] = {GPIOA, LL_GPIO_PIN_1};
-            adc_conf.channel[2] = {GPIOA, LL_GPIO_PIN_2};
-            adc_conf.channel[3] = {GPIOA, LL_GPIO_PIN_3};
-            adc_conf.channel[4] = {GPIOA, LL_GPIO_PIN_4};
-            adc_conf.channel[5] = {GPIOA, LL_GPIO_PIN_5};
-            adc_conf.channel[6] = {GPIOA, LL_GPIO_PIN_6};
-            adc_conf.channel[7] = {GPIOA, LL_GPIO_PIN_7};
-            adc_conf.channel[8] = {GPIOB, LL_GPIO_PIN_0};
-            adc_conf.channel[9] = {GPIOB, LL_GPIO_PIN_1};
-        }
-        void Init(void);
+private:
+    void PinInit(pin_t pin);
+    void ConfigInit(void);
+public:
+    adc_t adc_conf;
+    adc() {
+        adc_conf.ADC = ADC1;
+        adc_conf.channel[0] = {GPIOA, LL_GPIO_PIN_0};
+        adc_conf.channel[1] = {GPIOA, LL_GPIO_PIN_1};
+        adc_conf.channel[2] = {GPIOA, LL_GPIO_PIN_2};
+        adc_conf.channel[3] = {GPIOA, LL_GPIO_PIN_3};
+        adc_conf.channel[4] = {GPIOA, LL_GPIO_PIN_4};
+        adc_conf.channel[5] = {GPIOA, LL_GPIO_PIN_5};
+        adc_conf.channel[6] = {GPIOA, LL_GPIO_PIN_6};
+        adc_conf.channel[7] = {GPIOA, LL_GPIO_PIN_7};
+        adc_conf.channel[8] = {GPIOB, LL_GPIO_PIN_0};
+        adc_conf.channel[9] = {GPIOB, LL_GPIO_PIN_1};
+    }
+    void Init(void);
 };

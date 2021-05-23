@@ -1,4 +1,4 @@
-#include "stm32f103_conf.h"
+#include "stm32_conf.h"
 #include "gpio.h"
 #include "adc.h"
 
@@ -33,7 +33,6 @@ void adc::ConfigInit(void) {
         LL_DMA_SetChannelPriorityLevel(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PRIORITY_HIGH);
         NVIC_SetPriority(DMA1_Channel1_IRQn, 11);
         NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-        //LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_1);
         LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_1);
     }
     LL_ADC_REG_SetTriggerSource(adc_conf.ADC, LL_ADC_REG_TRIG_SOFTWARE);
@@ -43,7 +42,6 @@ void adc::ConfigInit(void) {
     LL_ADC_SetChannelSamplingTime(adc_conf.ADC, LL_ADC_CHANNEL_9, SAMPLING_TIME);
     LL_ADC_Enable(adc_conf.ADC);
     LL_ADC_REG_StartConversionSWStart(adc_conf.ADC);
-    //LL_ADC_EnableIT_EOS(adc_conf.ADC);
 }
 
 void adc::PinInit(pin_t pin) {
