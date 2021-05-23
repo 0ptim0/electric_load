@@ -54,11 +54,17 @@ void usart::PinInit() {
             LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
         } else if(usart_conf.rxtx[i].GPIOx == GPIOB) {
             LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOB);
-        }
-        
+        }        
     }
-
-
+    if(usart_conf.USART == USART1) {
+         LL_GPIO_SetPinMode(usart_conf.rxtx[0].GPIOx, usart_conf.rxtx[0].LL_PIN, LL_GPIO_MODE_ALTERNATE);
+         LL_GPIO_SetPinSpeed(usart_conf.rxtx[0].GPIOx, usart_conf.rxtx[0].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
+    } else if(usart_conf.USART == USART2) {
+        LL_GPIO_SetPinMode(usart_conf.rxtx[0].GPIOx, usart_conf.rxtx[0].LL_PIN, LL_GPIO_MODE_ALTERNATE);
+        LL_GPIO_SetPinSpeed(usart_conf.rxtx[0].GPIOx, usart_conf.rxtx[0].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
+    } else if(usart_conf.USART == USART3) {
+        LL_APB2_GRP1_DisableClock(LL_APB1_GRP1_PERIPH_USART3);
+    }
 }
 
 void usart::Init() {
