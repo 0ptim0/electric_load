@@ -13,7 +13,9 @@ void vTask1(void *pvParameters) {
 void vTask2(void *pvParameters) {
     while(1){
         i = adc1.adc_conf.data[0] * 3.3 / (0x0fff);
-        vTaskDelay(100);
+        vTaskDelay(1000);
+        i = adc1.adc_conf.data[1] * 3.3 / (0x0fff);
+        vTaskDelay(1000);
     }
 }
 

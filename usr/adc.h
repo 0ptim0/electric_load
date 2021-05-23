@@ -8,7 +8,7 @@
 typedef struct {
     ADC_TypeDef *ADC;
     pin_t channel[15];
-    uint32_t data[15];
+    uint16_t data[15];
 } adc_t;
 
 class adc {

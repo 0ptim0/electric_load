@@ -9,22 +9,22 @@ void adc::Init(void){
         LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_ADC2);
     }
     PinInit(adc_conf.channel[8]);
+    PinInit(adc_conf.channel[9]);
     ConfigInit();
-    //PinInit(adc_conf.channel[9]);
 }
 
 void adc::ConfigInit(void) {
     LL_ADC_REG_SetContinuousMode(adc_conf.ADC, LL_ADC_REG_CONV_CONTINUOUS); // TODO In argument
     LL_ADC_SetDataAlignment(adc_conf.ADC, LL_ADC_DATA_ALIGN_RIGHT);
-    LL_ADC_SetSequencersScanMode(adc_conf.ADC, LL_ADC_SEQ_SCAN_DISABLE);
-    LL_ADC_REG_SetSequencerLength(adc_conf.ADC, LL_ADC_REG_SEQ_SCAN_DISABLE); // TODO In argument
+    LL_ADC_SetSequencersScanMode(adc_conf.ADC, LL_ADC_SEQ_SCAN_ENABLE);
+    LL_ADC_REG_SetSequencerLength(adc_conf.ADC, LL_ADC_REG_SEQ_SCAN_ENABLE_2RANKS); // TODO In argument
     if(USE_DMA) { // TODO DMA in other class
         LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
         LL_ADC_REG_SetDMATransfer(adc_conf.ADC, LL_ADC_REG_DMA_TRANSFER_UNLIMITED);
         LL_DMA_SetPeriphAddress(DMA1, LL_DMA_CHANNEL_1, LL_ADC_DMA_GetRegAddr(adc_conf.ADC, LL_ADC_DMA_REG_REGULAR_DATA));
         LL_DMA_SetMemoryAddress(DMA1, LL_DMA_CHANNEL_1, (uint32_t)&(adc_conf.data));
         LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
-        LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, 1);
+        LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, 2);
         LL_DMA_SetPeriphIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PERIPH_NOINCREMENT);
         LL_DMA_SetMemoryIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MEMORY_INCREMENT);
         LL_DMA_SetPeriphSize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PDATAALIGN_HALFWORD);
@@ -38,7 +38,9 @@ void adc::ConfigInit(void) {
     }
     LL_ADC_REG_SetTriggerSource(adc_conf.ADC, LL_ADC_REG_TRIG_SOFTWARE);
     LL_ADC_REG_SetSequencerRanks(adc_conf.ADC, LL_ADC_REG_RANK_1, LL_ADC_CHANNEL_8);
+    LL_ADC_REG_SetSequencerRanks(adc_conf.ADC, LL_ADC_REG_RANK_2, LL_ADC_CHANNEL_9);
     LL_ADC_SetChannelSamplingTime(adc_conf.ADC, LL_ADC_CHANNEL_8, SAMPLING_TIME);
+    LL_ADC_SetChannelSamplingTime(adc_conf.ADC, LL_ADC_CHANNEL_9, SAMPLING_TIME);
     LL_ADC_Enable(adc_conf.ADC);
     LL_ADC_REG_StartConversionSWStart(adc_conf.ADC);
     //LL_ADC_EnableIT_EOS(adc_conf.ADC);
