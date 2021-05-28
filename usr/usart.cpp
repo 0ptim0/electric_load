@@ -11,10 +11,13 @@ void usart::Release() {
 void usart::ClockInit() {
     if(usart_conf.USART == USART1) {
         LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_USART1);
+        #define USART_IRQ1
     } else if(usart_conf.USART == USART2) {
         LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART2);
+        #define USART_IRQ2
     } else if(usart_conf.USART == USART3) {
         LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART3);
+        #define USART_IRQ3
     }
 }
 
@@ -76,7 +79,11 @@ void usart::Init() {
     /* START + 8B + STOP, NO PARITY */
     LL_USART_ConfigCharacter(usart_conf.USART, LL_USART_DATAWIDTH_8B, LL_USART_PARITY_NONE, LL_USART_STOPBITS_1);
     /* USART BAUDRATE */
-    LL_USART_SetBaudRate(usart_conf.USART, , usart_conf.baudrate);
+    LL_USART_SetBaudRate(usart_conf.USART, 
+                        ((usart_conf.USART == USART1) ? 
+                        LL_RCC_GetSysClkSource() / LL_RCC_GetAPB2Prescaler() : 
+                        LL_RCC_GetSysClkSource() / LL_RCC_GetAPB1Prescaler()),
+                        usart_conf.baudrate);
 
     NVIC_Enable();
     LL_USART_Enable(usart_conf.USART);
@@ -84,8 +91,10 @@ void usart::Init() {
     LL_USART_EnableIT_IDLE(usart_conf.USART);
     LL_USART_EnableIT_RXNE(usart_conf.USART);
 }
+ 
+#ifdef USART_IRQ1
 
-void USART2_IRQHandler(void) {
+void usart::USART1_IRQHandler(void) {
     static uint8_t _buf;
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
@@ -97,10 +106,60 @@ void USART2_IRQHandler(void) {
             LL_USART_DisableIT_TC(USART2);
             LL_USART_DisableIT_TXE(USART2);
             LL_USART_Disable(USART2);
-            xSemaphoreGiveFromISR(_semaphore, &xHigherPriorityTaskWoken);
+            xSemaphoreGiveFromISR(semaphore, &xHigherPriorityTaskWoken);
             if(xHigherPriorityTaskWoken == pdTRUE) {
                 portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
             }
         }
     }
 }
+
+#endif
+
+#ifdef USART_IRQ2
+    
+void usart::USART2_IRQHandler(void) {
+    static uint8_t _buf;
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+    if(LL_USART_IsActiveFlag_TXE(USART2)) {
+        if(xQueueReceiveFromISR(queue, &_buf, &xHigherPriorityTaskWoken) != errQUEUE_EMPTY) {
+            LL_USART_TransmitData8(USART2, _buf);
+            return;
+        } else if(LL_USART_IsActiveFlag_TC(USART2)) {
+            LL_USART_DisableIT_TC(USART2);
+            LL_USART_DisableIT_TXE(USART2);
+            LL_USART_Disable(USART2);
+            xSemaphoreGiveFromISR(semaphore, &xHigherPriorityTaskWoken);
+            if(xHigherPriorityTaskWoken == pdTRUE) {
+                portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+            }
+        }
+    }
+}
+
+#endif
+
+#ifdef USART_IRQ3
+
+void usart::USART3_IRQHandler(void) {
+    static uint8_t _buf;
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+    if(LL_USART_IsActiveFlag_TXE(USART2)) {
+        if(xQueueReceiveFromISR(queue, &_buf, &xHigherPriorityTaskWoken) != errQUEUE_EMPTY) {
+            LL_USART_TransmitData8(USART2, _buf);
+            return;
+        } else if(LL_USART_IsActiveFlag_TC(USART2)) {
+            LL_USART_DisableIT_TC(USART2);
+            LL_USART_DisableIT_TXE(USART2);
+            LL_USART_Disable(USART2);
+            xSemaphoreGiveFromISR(semaphore, &xHigherPriorityTaskWoken);
+            if(xHigherPriorityTaskWoken == pdTRUE) {
+                portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+            }
+        }
+    }
+}
+
+#endif

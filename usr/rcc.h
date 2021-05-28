@@ -1,0 +1,1 @@
+void rcc_config(void);

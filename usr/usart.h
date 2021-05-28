@@ -14,9 +14,6 @@ typedef struct {
 class usart {
 private:
     usart_t usart_conf;
-    SemaphoreHandle_t semaphore;
-    SemaphoreHandle_t mutex;
-    QueueHandle_t queue;
     int rx_length;
     int err;
     int address;
@@ -31,7 +28,13 @@ private:
     void PinReinit();
     void Init();
     void Deinit();
+    void USART1_IRQHandler();
+    void USART2_IRQHandler();
+    void USART3_IRQHandler();
 public:
+    SemaphoreHandle_t semaphore;
+    SemaphoreHandle_t mutex;
+    QueueHandle_t queue;
     usart(USART_TypeDef *USART, int baudrate) {
         usart_conf.USART = USART;
         usart_conf.baudrate = baudrate;
