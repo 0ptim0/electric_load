@@ -9,6 +9,7 @@ void usart::Release() {
 }
 
 void usart::ClockInit() {
+    taskENTER_CRITICAL();
     if(usart_conf.USART == USART1) {
         LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_USART1);
         #define USART_IRQ1
@@ -19,9 +20,11 @@ void usart::ClockInit() {
         LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART3);
         #define USART_IRQ3
     }
+    taskEXIT_CRITICAL();
 }
 
 void usart::ClockDeinit() {
+    taskENTER_CRITICAL();
     if(usart_conf.USART == USART1) {
         LL_APB2_GRP1_DisableClock(LL_APB2_GRP1_PERIPH_USART1);
     } else if(usart_conf.USART == USART2) {
@@ -29,6 +32,7 @@ void usart::ClockDeinit() {
     } else if(usart_conf.USART == USART3) {
         LL_APB2_GRP1_DisableClock(LL_APB1_GRP1_PERIPH_USART3);
     }
+    taskEXIT_CRITICAL();
 }
 
 void usart::NVIC_Enable() {
@@ -60,13 +64,20 @@ void usart::PinInit() {
         }        
     }
     if(usart_conf.USART == USART1) {
-         LL_GPIO_SetPinMode(usart_conf.rxtx[0].GPIOx, usart_conf.rxtx[0].LL_PIN, LL_GPIO_MODE_ALTERNATE);
-         LL_GPIO_SetPinSpeed(usart_conf.rxtx[0].GPIOx, usart_conf.rxtx[0].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
-    } else if(usart_conf.USART == USART2) {
         LL_GPIO_SetPinMode(usart_conf.rxtx[0].GPIOx, usart_conf.rxtx[0].LL_PIN, LL_GPIO_MODE_ALTERNATE);
         LL_GPIO_SetPinSpeed(usart_conf.rxtx[0].GPIOx, usart_conf.rxtx[0].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
+        LL_GPIO_SetPinMode(usart_conf.rxtx[1].GPIOx, usart_conf.rxtx[1].LL_PIN, LL_GPIO_MODE_ALTERNATE);
+        LL_GPIO_SetPinSpeed(usart_conf.rxtx[1].GPIOx, usart_conf.rxtx[1].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
+    } else if(usart_conf.USART == USART2) {
+        LL_GPIO_SetPinMode(usart_conf.rxtx[2].GPIOx, usart_conf.rxtx[2].LL_PIN, LL_GPIO_MODE_ALTERNATE);
+        LL_GPIO_SetPinSpeed(usart_conf.rxtx[2].GPIOx, usart_conf.rxtx[2].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
+        LL_GPIO_SetPinMode(usart_conf.rxtx[3].GPIOx, usart_conf.rxtx[3].LL_PIN, LL_GPIO_MODE_ALTERNATE);
+        LL_GPIO_SetPinSpeed(usart_conf.rxtx[3].GPIOx, usart_conf.rxtx[3].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
     } else if(usart_conf.USART == USART3) {
-        LL_APB2_GRP1_DisableClock(LL_APB1_GRP1_PERIPH_USART3);
+        LL_GPIO_SetPinMode(usart_conf.rxtx[4].GPIOx, usart_conf.rxtx[4].LL_PIN, LL_GPIO_MODE_ALTERNATE);
+        LL_GPIO_SetPinSpeed(usart_conf.rxtx[4].GPIOx, usart_conf.rxtx[4].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
+        LL_GPIO_SetPinMode(usart_conf.rxtx[5].GPIOx, usart_conf.rxtx[5].LL_PIN, LL_GPIO_MODE_ALTERNATE);
+        LL_GPIO_SetPinSpeed(usart_conf.rxtx[5].GPIOx, usart_conf.rxtx[5].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
     }
 }
 
@@ -93,7 +104,6 @@ void usart::Init() {
 }
  
 #ifdef USART_IRQ1
-
 void usart::USART1_IRQHandler(void) {
     static uint8_t _buf;
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -113,11 +123,9 @@ void usart::USART1_IRQHandler(void) {
         }
     }
 }
-
 #endif
 
 #ifdef USART_IRQ2
-    
 void usart::USART2_IRQHandler(void) {
     static uint8_t _buf;
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -137,11 +145,9 @@ void usart::USART2_IRQHandler(void) {
         }
     }
 }
-
 #endif
 
 #ifdef USART_IRQ3
-
 void usart::USART3_IRQHandler(void) {
     static uint8_t _buf;
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -161,5 +167,4 @@ void usart::USART3_IRQHandler(void) {
         }
     }
 }
-
 #endif
