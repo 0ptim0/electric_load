@@ -2,6 +2,8 @@
 
 indicator Indicator;
 adc adc1;
+usart usart2(USART2, 115200);
+
 float i = 0;
 
 void vTask1(void *pvParameters) {

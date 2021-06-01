@@ -1,5 +1,28 @@
 #include "usart.h"
 
+void usart::Print(char *string) {
+    Acquire();
+
+    LL_USART_EnableIT_TXE(usart_conf.USART);
+    LL_USART_EnableIT_TC(usart_conf.USART);
+    NVIC_Enable();
+    LL_USART_Enable(USART2);
+
+    if(xSemaphoreTake(_semaphore, pdMS_TO_TICKS(USART_TRANSACTION_TIMEOUT_ms))) {
+        //USART_Deinit();
+        USART_Release();
+        if(_err) {
+            return pdFALSE;
+        }
+    } else {
+        //USART_Deinit();
+        USART_Release();
+        return pdFALSE;
+    }
+
+    return pdTRUE;
+}
+
 void usart::Acquire() {
     xSemaphoreTake(mutex, portMAX_DELAY);
 }
