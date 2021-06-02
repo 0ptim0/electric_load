@@ -2,7 +2,7 @@
 
 int usart::Print(char *string) {
     Acquire();
-
+    xQueueSend(queue, string, 0);
     LL_USART_EnableIT_TXE(usart_conf.USART);
     LL_USART_EnableIT_TC(usart_conf.USART);
     NVIC_Enable();
@@ -78,24 +78,12 @@ void usart::PinInit() {
             LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
         } else if(usart_conf.rxtx[i].GPIOx == GPIOB) {
             LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOB);
-        }        
+        }
     }
-    if(usart_conf.USART == USART1) {
-        LL_GPIO_SetPinMode(usart_conf.rxtx[0].GPIOx, usart_conf.rxtx[0].LL_PIN, LL_GPIO_MODE_ALTERNATE);
-        LL_GPIO_SetPinSpeed(usart_conf.rxtx[0].GPIOx, usart_conf.rxtx[0].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
-        LL_GPIO_SetPinMode(usart_conf.rxtx[1].GPIOx, usart_conf.rxtx[1].LL_PIN, LL_GPIO_MODE_ALTERNATE);
-        LL_GPIO_SetPinSpeed(usart_conf.rxtx[1].GPIOx, usart_conf.rxtx[1].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
-    } else if(usart_conf.USART == USART2) {
-        LL_GPIO_SetPinMode(usart_conf.rxtx[2].GPIOx, usart_conf.rxtx[2].LL_PIN, LL_GPIO_MODE_ALTERNATE);
-        LL_GPIO_SetPinSpeed(usart_conf.rxtx[2].GPIOx, usart_conf.rxtx[2].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
-        LL_GPIO_SetPinMode(usart_conf.rxtx[3].GPIOx, usart_conf.rxtx[3].LL_PIN, LL_GPIO_MODE_ALTERNATE);
-        LL_GPIO_SetPinSpeed(usart_conf.rxtx[3].GPIOx, usart_conf.rxtx[3].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
-    } else if(usart_conf.USART == USART3) {
-        LL_GPIO_SetPinMode(usart_conf.rxtx[4].GPIOx, usart_conf.rxtx[4].LL_PIN, LL_GPIO_MODE_ALTERNATE);
-        LL_GPIO_SetPinSpeed(usart_conf.rxtx[4].GPIOx, usart_conf.rxtx[4].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
-        LL_GPIO_SetPinMode(usart_conf.rxtx[5].GPIOx, usart_conf.rxtx[5].LL_PIN, LL_GPIO_MODE_ALTERNATE);
-        LL_GPIO_SetPinSpeed(usart_conf.rxtx[5].GPIOx, usart_conf.rxtx[5].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
-    }
+    LL_GPIO_SetPinMode(usart_conf.rxtx[0].GPIOx, usart_conf.rxtx[0].LL_PIN, LL_GPIO_MODE_ALTERNATE);
+    LL_GPIO_SetPinSpeed(usart_conf.rxtx[0].GPIOx, usart_conf.rxtx[0].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
+    LL_GPIO_SetPinMode(usart_conf.rxtx[1].GPIOx, usart_conf.rxtx[1].LL_PIN, LL_GPIO_MODE_ALTERNATE);
+    LL_GPIO_SetPinSpeed(usart_conf.rxtx[1].GPIOx, usart_conf.rxtx[1].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
 }
 
 void usart::Init() {
@@ -108,9 +96,10 @@ void usart::Init() {
     LL_USART_ConfigCharacter(usart_conf.USART, LL_USART_DATAWIDTH_8B, LL_USART_PARITY_NONE, LL_USART_STOPBITS_1);
     /* USART BAUDRATE */
     LL_USART_SetBaudRate(usart_conf.USART, 
-                        ((usart_conf.USART == USART1) ? 
+                        USART_CLOCK,
+                        /*((usart_conf.USART == USART1) ? 
                         LL_RCC_GetSysClkSource() / LL_RCC_GetAPB2Prescaler() : 
-                        LL_RCC_GetSysClkSource() / LL_RCC_GetAPB1Prescaler()),
+                        LL_RCC_GetSysClkSource() / LL_RCC_GetAPB1Prescaler()),*/
                         usart_conf.baudrate);
 
     NVIC_Enable();

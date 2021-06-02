@@ -21,6 +21,13 @@ void vTask2(void *pvParameters) {
     }
 }
 
+void vTask3(void *pvParameters) {
+    while(1){
+        usart2.Print("\nHELLO\n");
+        vTaskDelay(1000);
+    }
+}
+
 int main(void) {
     rcc_config();
     Indicator.Init();
@@ -28,10 +35,15 @@ int main(void) {
     adc1.Init();
     xTaskCreate(vTask1, "LED control", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     xTaskCreate(vTask2, "Increment", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+    xTaskCreate(vTask3, "Send", configMINIMAL_STACK_SIZE, NULL, 3, NULL);
     vTaskStartScheduler();
     while(1){  
     }
 }
 
 void DMA1_Channel1_IRQHandler(void) {
+}
+
+void USART2_IRQHandler(){
+
 }
