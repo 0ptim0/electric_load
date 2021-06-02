@@ -1,6 +1,6 @@
 #include "usart.h"
 
-void usart::Print(char *string) {
+int usart::Print(char *string) {
     Acquire();
 
     LL_USART_EnableIT_TXE(usart_conf.USART);
@@ -8,19 +8,13 @@ void usart::Print(char *string) {
     NVIC_Enable();
     LL_USART_Enable(USART2);
 
-    if(xSemaphoreTake(_semaphore, pdMS_TO_TICKS(USART_TRANSACTION_TIMEOUT_ms))) {
-        //USART_Deinit();
-        USART_Release();
-        if(_err) {
-            return pdFALSE;
-        }
+    if(xSemaphoreTake(semaphore, pdMS_TO_TICKS(USART_TRANSACTION_TIMEOUT_ms))) {
+        Release();
+        return 0;
     } else {
-        //USART_Deinit();
-        USART_Release();
-        return pdFALSE;
+        Release();
+        return 1;
     }
-
-    return pdTRUE;
 }
 
 void usart::Acquire() {
@@ -125,20 +119,19 @@ void usart::Init() {
     LL_USART_EnableIT_IDLE(usart_conf.USART);
     LL_USART_EnableIT_RXNE(usart_conf.USART);
 }
- 
-#ifdef USART_IRQ1
-void usart::USART1_IRQHandler(void) {
-    static uint8_t _buf;
+
+void usart::IRQ_Handler() {
+    static uint8_t buf;
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-    if(LL_USART_IsActiveFlag_TXE(USART2)) {
-        if(xQueueReceiveFromISR(queue, &_buf, &xHigherPriorityTaskWoken) != errQUEUE_EMPTY) {
-            LL_USART_TransmitData8(USART2, _buf);
+    if(LL_USART_IsActiveFlag_TXE(usart_conf.USART)) {
+        if(xQueueReceiveFromISR(queue, &buf, &xHigherPriorityTaskWoken) != errQUEUE_EMPTY) {
+            LL_USART_TransmitData8(usart_conf.USART, buf);
             return;
-        } else if(LL_USART_IsActiveFlag_TC(USART2)) {
-            LL_USART_DisableIT_TC(USART2);
-            LL_USART_DisableIT_TXE(USART2);
-            LL_USART_Disable(USART2);
+        } else if(LL_USART_IsActiveFlag_TC(usart_conf.USART)) {
+            LL_USART_DisableIT_TC(usart_conf.USART);
+            LL_USART_DisableIT_TXE(usart_conf.USART);
+            LL_USART_Disable(usart_conf.USART);
             xSemaphoreGiveFromISR(semaphore, &xHigherPriorityTaskWoken);
             if(xHigherPriorityTaskWoken == pdTRUE) {
                 portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
@@ -146,48 +139,3 @@ void usart::USART1_IRQHandler(void) {
         }
     }
 }
-#endif
-
-#ifdef USART_IRQ2
-void usart::USART2_IRQHandler(void) {
-    static uint8_t _buf;
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
-    if(LL_USART_IsActiveFlag_TXE(USART2)) {
-        if(xQueueReceiveFromISR(queue, &_buf, &xHigherPriorityTaskWoken) != errQUEUE_EMPTY) {
-            LL_USART_TransmitData8(USART2, _buf);
-            return;
-        } else if(LL_USART_IsActiveFlag_TC(USART2)) {
-            LL_USART_DisableIT_TC(USART2);
-            LL_USART_DisableIT_TXE(USART2);
-            LL_USART_Disable(USART2);
-            xSemaphoreGiveFromISR(semaphore, &xHigherPriorityTaskWoken);
-            if(xHigherPriorityTaskWoken == pdTRUE) {
-                portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-            }
-        }
-    }
-}
-#endif
-
-#ifdef USART_IRQ3
-void usart::USART3_IRQHandler(void) {
-    static uint8_t _buf;
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
-    if(LL_USART_IsActiveFlag_TXE(USART2)) {
-        if(xQueueReceiveFromISR(queue, &_buf, &xHigherPriorityTaskWoken) != errQUEUE_EMPTY) {
-            LL_USART_TransmitData8(USART2, _buf);
-            return;
-        } else if(LL_USART_IsActiveFlag_TC(USART2)) {
-            LL_USART_DisableIT_TC(USART2);
-            LL_USART_DisableIT_TXE(USART2);
-            LL_USART_Disable(USART2);
-            xSemaphoreGiveFromISR(semaphore, &xHigherPriorityTaskWoken);
-            if(xHigherPriorityTaskWoken == pdTRUE) {
-                portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-            }
-        }
-    }
-}
-#endif

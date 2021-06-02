@@ -28,9 +28,7 @@ private:
     void PinReinit();
     void Init();
     void Deinit();
-    void USART1_IRQHandler();
-    void USART2_IRQHandler();
-    void USART3_IRQHandler();
+    void IRQ_Handler();
 public:
     SemaphoreHandle_t semaphore;
     SemaphoreHandle_t mutex;
