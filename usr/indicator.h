@@ -9,12 +9,13 @@
 #define f   0b00100000
 #define g   0b01000000
 #define dot 0b10000000
+#define DIG_NUM 8
 
 typedef struct {
     pin_t segment[8]; // a,b,c,d,e,f,d,dot
-    pin_t digit[4];
-    int digits;
-    int precision; 
+    pin_t digit[DIG_NUM];
+    uint8_t digits = [DIG_NUM];
+    uint8_t precision; 
 } indicator_t;
 
 class indicator {

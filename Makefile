@@ -10,9 +10,10 @@ HEAP_SIZE = 0x400
 ################
 # Sources
 
-SOURCES_S = mcu/$(MCU)/core/startup_stm32f103xb.s
+SOURCES_S = $(wildcard mcu/$(MCU)/core/*.s)
 
 SOURCES_C_CORE = $(wildcard mcu/$(MCU)/core/*.c)
+SOURCES_C_HAL = $(wildcard mcu/$(MCU)/hal/src/*.c)
 SOURCES_C_RTOS_CORE = $(wildcard freertos/core/src/*.c)
 SOURCES_C_RTOS_PORT = $(wildcard freertos/port/$(MCU)/*.c)
 SOURCES_C_HEAP = freertos/MemMang/heap_1.c
@@ -20,6 +21,7 @@ SOURCES_C_HEAP = freertos/MemMang/heap_1.c
 SOURCES_CXX_USR = $(wildcard usr/*.cpp)
 
 SOURCES_C = $(SOURCES_C_CORE)
+SOURCES_C = $(SOURCES_C_HAL)
 SOURCES_C += $(SOURCES_C_PERIPH)
 SOURCES_C += $(SOURCES_C_RTOS_CORE)
 SOURCES_C += $(SOURCES_C_RTOS_PORT)
@@ -34,13 +36,13 @@ OBJS = $(SOURCES_S:.s=.o) $(SOURCES_C:.c=.o) $(SOURCES_CXX:.cpp=.o)
 # Includes and Defines
 
 INC_CORE = -Imcu/$(MCU)/core
-INC_PERIPH = -Imcu/$(MCU)/ll
+INC_HAL = -Imcu/$(MCU)/hal/inc
 INC_LIB = -Iusr
 INC_RTOS_CORE = -Ifreertos/core/inc 
 INC_RTOS_PORT = -Ifreertos/port/$(MCU)
 INC_CONF = -Iconf
 INCLUDES += $(INC_CORE)
-INCLUDES += $(INC_PERIPH)
+INCLUDES += $(INC_HAL)
 INCLUDES += $(INC_LIB)
 INCLUDES += $(INC_RTOS_CORE)
 INCLUDES += $(INC_RTOS_PORT)

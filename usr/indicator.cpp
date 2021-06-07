@@ -12,13 +12,13 @@ void indicator::Init(void) {
     }
 }
 
-void indicator::SetPrecision(int prec) {
+void indicator::SetPrecision(uint8_t prec) {
     prec = (prec > 3 ? 3 : prec);
     prec = (prec < 0 ? 0 : prec);
     ind.precision = prec;
 }
 
-void indicator::SetDigits(int dig) {
+void indicator::SetDigits(uint8_t dig) {
     dig = (dig > 4 ? 4 : dig);
     dig = (dig < 0 ? 0 : dig);
     ind.digits = dig;
@@ -76,27 +76,27 @@ void indicator::PrintDigit(int digit) {
 void indicator::Set(int pin) {
     for(int i = 0; i < 8; i++) {
         if(pin & (1 << i)) {
-            LL_GPIO_SetOutputPin(ind.segment[i].GPIOx, ind.segment[i].LL_PIN);
+            HAL_GPIO_WritePin(ind.segment[i].GPIOx, ind.segment[i].GPIO_PIN, GPIO_PIN_SET);
         }
         else {
-            LL_GPIO_ResetOutputPin(ind.segment[i].GPIOx, ind.segment[i].LL_PIN);
+            HAL_GPIO_WritePin(ind.segment[i].GPIOx, ind.segment[i].GPIO_PIN, GPIO_PIN_RESET);
         }
     }
 }
 
 void indicator::SetDot(void) {
-    LL_GPIO_SetOutputPin(ind.segment[7].GPIOx, ind.segment[7].LL_PIN);
+    HAL_GPIO_WritePin(ind.segment[7].GPIOx, ind.segment[7].GPIO_PIN, GPIO_PIN_SET);
 }
 
 
 void indicator::ChangeDigit(void) {
-    LL_GPIO_ResetOutputPin(ind.digit[now].GPIOx, ind.digit[now].LL_PIN);
+    HAL_GPIO_WritePin(ind.digit[now].GPIOx, ind.digit[now].GPIO_PIN, GPIO_PIN_RESET);
     if(now == (ind.digits - 1)) {
         now = 0;
     } else {
         now++;
     }
-    LL_GPIO_SetOutputPin(ind.digit[now].GPIOx, ind.digit[now].LL_PIN);
+    HAL_GPIO_WritePin(ind.digit[now].GPIOx, ind.digit[now].GPIO_PIN, GPIO_PIN_SET);
 }
 
 void indicator::ResetAllSegments(void) {
@@ -104,18 +104,20 @@ void indicator::ResetAllSegments(void) {
 }
 
 void indicator::PinInit(pin_t pin) {
+    GPIO_InitTypeDef GPIO_InitStructure;
     if(pin.GPIOx == GPIOA) {
-        LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
+        __HAL_RCC_GPIOA_CLK_ENABLE();
     } else if(pin.GPIOx == GPIOB) {
-        LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOB);
+        __HAL_RCC_GPIOB_CLK_ENABLE();
     } else if(pin.GPIOx == GPIOC) {
-        LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOC);
+        __HAL_RCC_GPIOC_CLK_ENABLE();
     } else if(pin.GPIOx == GPIOD) {
-        LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOD);
+        __HAL_RCC_GPIOD_CLK_ENABLE();
     } else if(pin.GPIOx == GPIOE) {
-        LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOE);
+        __HAL_RCC_GPIOE_CLK_ENABLE();
     }
-    LL_GPIO_SetPinMode(pin.GPIOx, pin.LL_PIN, LL_GPIO_MODE_OUTPUT);
-    LL_GPIO_SetPinOutputType(pin.GPIOx, pin.LL_PIN, LL_GPIO_OUTPUT_PUSHPULL);
-    LL_GPIO_SetPinSpeed(pin.GPIOx, pin.LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
+    GPIO_InitStructure.Pin = pin.GPIO_PIN;
+    GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(pin.GPIOx, &GPIO_InitStructure);
 }

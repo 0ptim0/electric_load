@@ -3,5 +3,5 @@
 
 typedef struct {
     GPIO_TypeDef *GPIOx;
-    int LL_PIN;
+    int GPIO_PIN;
 } pin_t;
