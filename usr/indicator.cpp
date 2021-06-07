@@ -37,7 +37,7 @@ void indicator::Print(float number) {
 }
 
 // TODO: add norm decoder
-void indicator::PrintDigit(int digit) {
+void indicator::PrintDigit(uint8_t digit) {
     ResetAllSegments();
     switch(digit) {
         case 0:

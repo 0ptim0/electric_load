@@ -2,7 +2,7 @@
 
 indicator Indicator;
 adc adc1;
-usart usart2(USART2, 115200);
+//usart usart2(USART2, 115200);
 
 float i = 0;
 
@@ -23,7 +23,7 @@ void vTask2(void *pvParameters) {
 
 void vTask3(void *pvParameters) {
     while(1){
-        usart2.Print("\nHELLO\n");
+        //usart2.Print("\nHELLO\n");
         vTaskDelay(1000);
     }
 }
