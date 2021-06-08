@@ -6,15 +6,9 @@
 #define USART_QUEUE_LENGTH 1024
 #define USART_CLOCK 72000000
 
-typedef struct {
-    USART_TypeDef *USART;
-    int baudrate;
-    pin_t rxtx[2];
-} usart_t;
-
-class usart {
+class uart {
 private:
-    usart_t usart_conf;
+    UART_HandleTypeDef UART_InitStructure;
     int rx_length;
     int err;
     int address;
@@ -31,16 +25,14 @@ private:
     void Deinit();
     void IRQ_Handler();
 public:
-    usart(USART_TypeDef *USART, int baudrate) {
-        usart_conf.USART = USART;
-        usart_conf.baudrate = baudrate;
-        usart_conf.rxtx[0] = {GPIOA, LL_GPIO_PIN_3};
-        usart_conf.rxtx[1] = {GPIOA, LL_GPIO_PIN_2};
+    uart(USART_TypeDef *USART, int baudrate) {
+        /*UART_InitStructure.Instance = USART;
+        UART_InitStructure.Init.BaudRate = baudrate;
         ClockInit();
         Init();
         semaphore = xSemaphoreCreateBinary();
         mutex = xSemaphoreCreateMutex();
-        queue = xQueueCreate(USART_QUEUE_LENGTH, sizeof(uint8_t));
+        queue = xQueueCreate(USART_QUEUE_LENGTH, sizeof(uint8_t));*/
     }
     SemaphoreHandle_t semaphore;
     SemaphoreHandle_t mutex;

@@ -1,6 +1,6 @@
-#include "usart.h"
+#include "uart.h"
 
-int usart::Print(char *string) {
+int uart::Print(char *string) {
     Acquire();
     xQueueSend(queue, string, 0);
     LL_USART_EnableIT_TXE(usart_conf.USART);
@@ -17,15 +17,15 @@ int usart::Print(char *string) {
     }
 }
 
-void usart::Acquire() {
+void uart::Acquire() {
     xSemaphoreTake(mutex, portMAX_DELAY);
 }
 
-void usart::Release() {
+void uart::Release() {
     xSemaphoreGive(mutex);
 }
 
-void usart::ClockInit() {
+void uart::ClockInit() {
     taskENTER_CRITICAL();
     if(usart_conf.USART == USART1) {
         LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_USART1);
@@ -40,7 +40,7 @@ void usart::ClockInit() {
     taskEXIT_CRITICAL();
 }
 
-void usart::ClockDeinit() {
+void uart::ClockDeinit() {
     taskENTER_CRITICAL();
     if(usart_conf.USART == USART1) {
         LL_APB2_GRP1_DisableClock(LL_APB2_GRP1_PERIPH_USART1);
@@ -52,7 +52,7 @@ void usart::ClockDeinit() {
     taskEXIT_CRITICAL();
 }
 
-void usart::NVIC_Enable() {
+void uart::NVIC_Enable() {
     if(usart_conf.USART == USART1) {
         NVIC_EnableIRQ(USART1_IRQn);
     } else if(usart_conf.USART == USART2) {
@@ -62,7 +62,7 @@ void usart::NVIC_Enable() {
     }
 }
 
-void usart::NVIC_Disable() {
+void uart::NVIC_Disable() {
     if(usart_conf.USART == USART1) {
         NVIC_DisableIRQ(USART1_IRQn);
     } else if(usart_conf.USART == USART2) {
@@ -72,7 +72,7 @@ void usart::NVIC_Disable() {
     }
 }
 
-void usart::PinInit() {
+void uart::PinInit() {
     for(int i = 0; i < 2; i++) {
         if(usart_conf.rxtx[i].GPIOx == GPIOA) {
             LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
@@ -86,9 +86,10 @@ void usart::PinInit() {
     LL_GPIO_SetPinSpeed(usart_conf.rxtx[1].GPIOx, usart_conf.rxtx[1].LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
 }
 
-void usart::Init() {
+void uart::Init() {
     PinInit();
     /* CONFIG FOR ASYNC MODE */
+    UART_InitStructure.
     LL_USART_ConfigAsyncMode(usart_conf.USART);
     /* FULL DUPLEX REGIMES */
     LL_USART_SetTransferDirection(usart_conf.USART, LL_USART_DIRECTION_TX_RX);
@@ -109,7 +110,7 @@ void usart::Init() {
     LL_USART_EnableIT_RXNE(usart_conf.USART);
 }
 
-void usart::IRQ_Handler() {
+void uart::IRQ_Handler() {
     static uint8_t buf;
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 

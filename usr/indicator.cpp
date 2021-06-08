@@ -36,7 +36,7 @@ void indicator::Print(float number) {
     }
 }
 
-// TODO: add norm decoder
+// TODO add norm decoder
 void indicator::PrintDigit(uint8_t digit) {
     ResetAllSegments();
     switch(digit) {
@@ -73,7 +73,7 @@ void indicator::PrintDigit(uint8_t digit) {
     }
 }
 
-void indicator::Set(int pin) {
+void indicator::Set(uint8_t pin) {
     for(int i = 0; i < 8; i++) {
         if(pin & (1 << i)) {
             HAL_GPIO_WritePin(ind.segment[i].GPIOx, ind.segment[i].GPIO_PIN, GPIO_PIN_SET);

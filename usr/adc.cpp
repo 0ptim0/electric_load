@@ -3,18 +3,22 @@
 #include "adc.h"
 
 void adc::Init(void){
-    if(adc_conf.ADC == ADC1) {
-        LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_ADC1);
-    } else if(adc_conf.ADC == ADC2) {
-        LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_ADC2);
+    if(ADC_InitStructure.Instance == ADC1) {
+        __HAL_RCC_ADC1_CLK_ENABLE();
+    } else if(ADC_InitStructure.Instance == ADC2) {
+        __HAL_RCC_ADC2_CLK_ENABLE();
     }
-    PinInit(adc_conf.channel[8]);
-    PinInit(adc_conf.channel[9]);
     ConfigInit();
 }
 
 void adc::ConfigInit(void) {
-    LL_ADC_REG_SetContinuousMode(adc_conf.ADC, LL_ADC_REG_CONV_CONTINUOUS); // TODO In argument
+    ADC_InitStructure.Init.ScanConvMode = ENABLE;
+    ADC_InitStructure.Init.ContinuousConvMode = ENABLE;
+    ADC_InitStructure.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    ADC_InitStructure.Init.NbrOfConversion = 2;
+    ADC_InitStructure.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+    // TODO Add DMA from HAL
+    /*LL_ADC_REG_SetContinuousMode(adc_conf.ADC, LL_ADC_REG_CONV_CONTINUOUS); // TODO In argument
     LL_ADC_SetDataAlignment(adc_conf.ADC, LL_ADC_DATA_ALIGN_RIGHT);
     LL_ADC_SetSequencersScanMode(adc_conf.ADC, LL_ADC_SEQ_SCAN_ENABLE);
     LL_ADC_REG_SetSequencerLength(adc_conf.ADC, LL_ADC_REG_SEQ_SCAN_ENABLE_2RANKS); // TODO In argument
@@ -41,21 +45,6 @@ void adc::ConfigInit(void) {
     LL_ADC_SetChannelSamplingTime(adc_conf.ADC, LL_ADC_CHANNEL_8, SAMPLING_TIME);
     LL_ADC_SetChannelSamplingTime(adc_conf.ADC, LL_ADC_CHANNEL_9, SAMPLING_TIME);
     LL_ADC_Enable(adc_conf.ADC);
-    LL_ADC_REG_StartConversionSWStart(adc_conf.ADC);
-}
-
-void adc::PinInit(pin_t pin) {
-    if(pin.GPIOx == GPIOA) {
-        LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
-    } else if(pin.GPIOx == GPIOB) {
-        LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOB);
-    } else if(pin.GPIOx == GPIOC) {
-        LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOC);
-    } else if(pin.GPIOx == GPIOD) {
-        LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOD);
-    } else if(pin.GPIOx == GPIOE) {
-        LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOE);
-    }
-    LL_GPIO_SetPinMode(pin.GPIOx, pin.LL_PIN, LL_GPIO_MODE_ANALOG);
-    LL_GPIO_SetPinSpeed(pin.GPIOx, pin.LL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
+    LL_ADC_REG_StartConversionSWStart(adc_conf.ADC);*/
+    HAL_ADC_Init(&ADC_InitStructure);
 }

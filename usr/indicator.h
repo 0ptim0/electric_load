@@ -22,7 +22,7 @@ class indicator {
 private:
     void PinInit(pin_t pin);
     void PrintDigit(uint8_t pin);
-    void Set(int pin);
+    void Set(uint8_t pin);
     void SetDot(void);
     void ResetAllSegments(void);
     void ChangeDigit(void);

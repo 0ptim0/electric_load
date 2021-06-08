@@ -2,8 +2,7 @@
 #include "stm32f103xb.h"
 
 /** HAL */
-#include "stm32f1xx_hal.h"
-#include "stm32f1xx_hal_conf.h"
+#include "stm32_hal_conf.h"
 
 /** FreeRTOS */
 #include "FreeRTOS.h"
