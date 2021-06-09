@@ -2,7 +2,6 @@
 #include "convert.h"
 
 // TODO optimizate code
-
 void indicator::Init(void) {
     for(int i = 0; i < ind.digits; i++) {
         PinInit(ind.digit[i]);
