@@ -9,7 +9,7 @@
 class uart {
 private:
     UART_HandleTypeDef UART_InitStructure;
-    int rx_length;
+    /*int rx_length;
     int err;
     int address;
     int buffer[USART_QUEUE_LENGTH];
@@ -23,7 +23,7 @@ private:
     void PinReinit();
     void Init();
     void Deinit();
-    void IRQ_Handler();
+    void IRQ_Handler();*/
 public:
     uart(USART_TypeDef *USART, int baudrate) {
         /*UART_InitStructure.Instance = USART;
@@ -34,10 +34,10 @@ public:
         mutex = xSemaphoreCreateMutex();
         queue = xQueueCreate(USART_QUEUE_LENGTH, sizeof(uint8_t));*/
     }
-    SemaphoreHandle_t semaphore;
+    /*SemaphoreHandle_t semaphore;
     SemaphoreHandle_t mutex;
     QueueHandle_t queue;
     int Print(char *string);
     int Print(int number);
-    int Print(float number);
+    int Print(float number);*/
 };

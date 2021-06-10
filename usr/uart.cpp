@@ -1,6 +1,6 @@
 #include "uart.h"
 
-int uart::Print(char *string) {
+/*int uart::Print(char *string) {
     Acquire();
     xQueueSend(queue, string, 0);
     LL_USART_EnableIT_TXE(usart_conf.USART);
@@ -110,7 +110,7 @@ void uart::Init() {
     LL_USART_EnableIT_RXNE(usart_conf.USART);
 }
 
-void uart::IRQ_Handler() {
+/*void uart::IRQ_Handler() {
     static uint8_t buf;
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
@@ -128,4 +128,4 @@ void uart::IRQ_Handler() {
             }
         }
     }
-}
+}*/
