@@ -22,9 +22,16 @@ void vTask2(void *pvParameters) {
 }
 
 void vTask3(void *pvParameters) {
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitStructure.Pin = GPIO_PIN_13;
+    GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.Speed= GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
     while(1){
         //usart2.Print("\nHELLO\n");
         vTaskDelay(1000);
+        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     }
 }
 
@@ -34,9 +41,9 @@ int main(void) {
     Indicator.Init();
     Indicator.SetPrecision(1);
     //adc1.Init();
-    xTaskCreate(vTask1, "LED control", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-    xTaskCreate(vTask2, "Increment", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
-    xTaskCreate(vTask3, "Send", configMINIMAL_STACK_SIZE, NULL, 3, NULL);
+    //xTaskCreate(vTask1, "LED control", configMINIMAL_STACK_SIZE, NULL, 3, NULL);
+    //xTaskCreate(vTask2, "Increment", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+    xTaskCreate(vTask3, "Send", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     vTaskStartScheduler();
     while(1){  
     }

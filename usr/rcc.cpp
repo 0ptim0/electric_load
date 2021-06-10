@@ -11,9 +11,9 @@ void rcc_config(void) {
     RCC_OscInitStructure.PLL.PLLMUL = RCC_PLL_MUL9;
     HAL_RCC_OscConfig(&RCC_OscInitStructure);
 
-    RCC_ClkInitStructure.ClockType = RCC_CLOCKTYPE_PCLK1;
+    RCC_ClkInitStructure.ClockType = RCC_CLOCKTYPE_HCLK;
     RCC_ClkInitStructure.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-    RCC_ClkInitStructure.AHBCLKDivider = RCC_SYSCLK_DIV4;
+    RCC_ClkInitStructure.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStructure.APB1CLKDivider = RCC_HCLK_DIV2;
     RCC_ClkInitStructure.APB2CLKDivider = RCC_HCLK_DIV1;
     HAL_RCC_ClockConfig(&RCC_ClkInitStructure, FLASH_LATENCY_0);
