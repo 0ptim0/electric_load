@@ -26,13 +26,14 @@ void adc::ConfigInit(void) {
     DMA_InitStructure.Instance = DMA1_Channel1;
     DMA_InitStructure.Init.Mode = DMA_CIRCULAR;
     DMA_InitStructure.Init.Direction = DMA_PERIPH_TO_MEMORY;
-    DMA_InitStructure.Init.MemInc = DMA_MINC_DISABLE;
-    DMA_InitStructure.Init.PeriphInc = DMA_PINC_ENABLE;
+    DMA_InitStructure.Init.MemInc = DMA_MINC_ENABLE;
+    DMA_InitStructure.Init.PeriphInc = DMA_PINC_DISABLE;
     DMA_InitStructure.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
     DMA_InitStructure.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
     DMA_InitStructure.Init.Priority = DMA_PRIORITY_HIGH;
     ADC_InitStructure.DMA_Handle = &DMA_InitStructure;
     HAL_DMA_Init(&DMA_InitStructure);
+
     ADC_ChInitStructure.Channel = ADC_CHANNEL_8;
     ADC_ChInitStructure.Rank = ADC_REGULAR_RANK_1;
     ADC_ChInitStructure.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
@@ -41,6 +42,7 @@ void adc::ConfigInit(void) {
     ADC_ChInitStructure.Rank = ADC_REGULAR_RANK_2;
     ADC_ChInitStructure.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
     HAL_ADC_ConfigChannel(&ADC_InitStructure, &ADC_ChInitStructure);
+
     HAL_ADC_Start_DMA(&ADC_InitStructure, (this->buf), 2);
     //HAL_DMA_Start(&DMA_InitStructure, 0x4C,(uint32_t)&(this->buf), 2);
     // TODO Add DMA from HAL
