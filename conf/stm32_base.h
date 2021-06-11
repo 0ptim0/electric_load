@@ -11,6 +11,5 @@
 #include "timers.h"
 #include "semphr.h"
 
-/** Clock **/
-#include "rcc.h"
+/** Handlers **/
 #include "general.h"

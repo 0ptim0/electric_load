@@ -1,7 +1,7 @@
 #include "stm32_conf.h"
 
 indicator Indicator;
-//adc adc1;
+adc adc1(ADC1);
 //usart usart2(USART2, 115200);
 
 float i = 0;
@@ -13,10 +13,13 @@ void vTask1(void *pvParameters) {
 }
 
 void vTask2(void *pvParameters) {
+    adc1.Init();
     while(1){
         //i = adc1.adc_conf.data[0] * 3.3 / (0x0fff);
+        i = adc1.buf[0] * 3.3 / (0x0FFF);
         vTaskDelay(1000);
-        i++;
+        i = adc1.buf[1] * 3.3 / (0x0FFF);
+        vTaskDelay(1000);
         //i = adc1.adc_conf.data[1] * 3.3 / (0x0fff);
     }
 }
@@ -39,7 +42,7 @@ int main(void) {
     HAL_Init();
     rcc_config();
     Indicator.Init();
-    Indicator.SetPrecision(0);
+    Indicator.SetPrecision(1);
     //adc1.Init();
     xTaskCreate(vTask1, "LED control", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     xTaskCreate(vTask2, "Increment", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
