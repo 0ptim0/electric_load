@@ -2,13 +2,17 @@
 #include "gpio.h"
 #pragma once
 
-#define USART_TRANSACTION_TIMEOUT_ms 1000
-#define USART_QUEUE_LENGTH 1024
-#define USART_CLOCK 72000000
+#define UART_TRANSACTION_TIMEOUT_ms 1000
+#define UART_QUEUE_LENGTH 1024
 
 class uart {
 private:
     UART_HandleTypeDef UART_InitStructure;
+    SemaphoreHandle_t semaphore;
+    SemaphoreHandle_t mutex;
+    QueueHandle_t queue;
+    int timeout;
+    int buf_size;
     /*int rx_length;
     int err;
     int address;
@@ -26,9 +30,12 @@ private:
     void IRQ_Handler();*/
 public:
     uart(USART_TypeDef *USART, int baudrate) {
-        /*UART_InitStructure.Instance = USART;
+        timeout = UART_TRANSACTION_TIMEOUT_ms;
+        buf_size = UART_QUEUE_LENGTH;
+        UART_InitStructure.Instance = USART;
         UART_InitStructure.Init.BaudRate = baudrate;
-        ClockInit();
+
+        /*ClockInit();
         Init();
         semaphore = xSemaphoreCreateBinary();
         mutex = xSemaphoreCreateMutex();

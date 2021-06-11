@@ -11,8 +11,5 @@ private:
     void ConfigInit(void);
 public:
     uint32_t buf[2];
-    adc(ADC_TypeDef *ADC) {
-        ADC_InitStructure.Instance = ADC;
-    }
-    void Init(void);
+    void Init(ADC_TypeDef *ADC);
 };

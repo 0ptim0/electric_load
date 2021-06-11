@@ -1,6 +1,7 @@
 #include "stm32_base.h"
+#include "rcc.h"
 
-void rcc_config(void) {
+void rcc::Init() {
     RCC_ClkInitTypeDef RCC_ClkInitStructure;
     RCC_OscInitTypeDef RCC_OscInitStructure;
 
@@ -13,7 +14,6 @@ void rcc_config(void) {
     if(HAL_RCC_OscConfig(&RCC_OscInitStructure) != HAL_OK) {
         Error_Handler();
     }
-
 
     RCC_ClkInitStructure.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
                                     | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;

@@ -1,7 +1,8 @@
 #include "stm32_conf.h"
 
+rcc Rcc1;
+adc Adc1;
 indicator Indicator;
-adc adc1(ADC1);
 //usart usart2(USART2, 115200);
 
 float i = 0;
@@ -13,12 +14,12 @@ void vTask1(void *pvParameters) {
 }
 
 void vTask2(void *pvParameters) {
-    adc1.Init();
+    Adc1.Init(ADC1);
     while(1){
         //i = adc1.adc_conf.data[0] * 3.3 / (0x0fff);
-        i = adc1.buf[0] * 3.3 / (0x0FFF);
+        i = Adc1.buf[0] * 3.3 / (0x0FFF);
         vTaskDelay(1000);
-        i = adc1.buf[1] * 3.3 / (0x0FFF);
+        i = Adc1.buf[1] * 3.3 / (0x0FFF);
         vTaskDelay(1000);
         //i = adc1.adc_conf.data[1] * 3.3 / (0x0fff);
     }
@@ -40,7 +41,7 @@ void vTask3(void *pvParameters) {
 
 int main(void) {
     HAL_Init();
-    rcc_config();
+    Rcc1.Init();
     Indicator.Init();
     Indicator.SetPrecision(1);
     //adc1.Init();

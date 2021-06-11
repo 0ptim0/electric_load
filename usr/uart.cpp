@@ -1,5 +1,20 @@
 #include "uart.h"
 
+/*void uart::ClockInit() {
+    taskENTER_CRITICAL();
+    if(usart_conf.USART == USART1) {
+        LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_USART1);
+        #define USART_IRQ1
+    } else if(usart_conf.USART == USART2) {
+        LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART2);
+        #define USART_IRQ2
+    } else if(usart_conf.USART == USART3) {
+        LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART3);
+        #define USART_IRQ3
+    }
+    taskEXIT_CRITICAL();
+}*/
+
 /*int uart::Print(char *string) {
     Acquire();
     xQueueSend(queue, string, 0);
