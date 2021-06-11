@@ -16,8 +16,8 @@ void vTask2(void *pvParameters) {
     while(1){
         //i = adc1.adc_conf.data[0] * 3.3 / (0x0fff);
         vTaskDelay(1000);
+        i++;
         //i = adc1.adc_conf.data[1] * 3.3 / (0x0fff);
-        vTaskDelay(1000);
     }
 }
 
@@ -39,11 +39,11 @@ int main(void) {
     HAL_Init();
     rcc_config();
     Indicator.Init();
-    Indicator.SetPrecision(1);
+    Indicator.SetPrecision(0);
     //adc1.Init();
-    //xTaskCreate(vTask1, "LED control", configMINIMAL_STACK_SIZE, NULL, 3, NULL);
-    //xTaskCreate(vTask2, "Increment", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
-    xTaskCreate(vTask3, "Send", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(vTask1, "LED control", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(vTask2, "Increment", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+    //xTaskCreate(vTask3, "Send", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     vTaskStartScheduler();
     while(1){  
     }

@@ -88,19 +88,12 @@ void uart::PinInit() {
 
 void uart::Init() {
     PinInit();
-    /* CONFIG FOR ASYNC MODE */
     UART_InitStructure.
     LL_USART_ConfigAsyncMode(usart_conf.USART);
-    /* FULL DUPLEX REGIMES */
     LL_USART_SetTransferDirection(usart_conf.USART, LL_USART_DIRECTION_TX_RX);
-    /* START + 8B + STOP, NO PARITY */
     LL_USART_ConfigCharacter(usart_conf.USART, LL_USART_DATAWIDTH_8B, LL_USART_PARITY_NONE, LL_USART_STOPBITS_1);
-    /* USART BAUDRATE */
     LL_USART_SetBaudRate(usart_conf.USART, 
                         USART_CLOCK,
-                        /*((usart_conf.USART == USART1) ? 
-                        LL_RCC_GetSysClkSource() / LL_RCC_GetAPB2Prescaler() : 
-                        LL_RCC_GetSysClkSource() / LL_RCC_GetAPB1Prescaler()),*/
                         usart_conf.baudrate);
 
     NVIC_Enable();
@@ -110,7 +103,7 @@ void uart::Init() {
     LL_USART_EnableIT_RXNE(usart_conf.USART);
 }
 
-/*void uart::IRQ_Handler() {
+void uart::IRQ_Handler() {
     static uint8_t buf;
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
