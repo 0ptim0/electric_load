@@ -10,6 +10,6 @@ private:
     ADC_HandleTypeDef ADC_InitStructure;
     void ConfigInit(void);
 public:
-    uint32_t buf[2];
+    uint16_t buf[2];
     void Init(ADC_TypeDef *ADC);
 };

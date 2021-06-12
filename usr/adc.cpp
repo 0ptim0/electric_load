@@ -44,5 +44,5 @@ void adc::ConfigInit(void) {
     ADC_ChInitStructure.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
     HAL_ADC_ConfigChannel(&ADC_InitStructure, &ADC_ChInitStructure);
 
-    HAL_ADC_Start_DMA(&ADC_InitStructure, this->buf, 2);
+    HAL_ADC_Start_DMA(&ADC_InitStructure, reinterpret_cast<uint32_t *>(this->buf), 2);
 }
