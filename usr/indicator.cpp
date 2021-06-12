@@ -1,6 +1,8 @@
 #include "indicator.h"
 #include "convert.h"
 
+static SemaphoreHandle_t mutex;
+
 // TODO optimizate code
 void indicator::Init(void) {
     for(int i = 0; i < ind.digits; i++) {
@@ -9,35 +11,33 @@ void indicator::Init(void) {
     for(int i = 0; i < 8; i++) {
         PinInit(ind.segment[i]);
     }
-}
-
-void indicator::SetPrecision(uint8_t prec) {
-    prec = (prec > 3 ? 3 : prec);
-    prec = (prec < 0 ? 0 : prec);
-    ind.precision = prec;
-}
-
-void indicator::SetDigits(uint8_t dig) {
-    dig = (dig > 4 ? 4 : dig);
-    dig = (dig < 0 ? 0 : dig);
-    ind.digits = dig;
+    mutex = xSemaphoreCreateMutex();
 }
 
 void indicator::Print(float number) {
+    xSemaphoreTake(mutex, portTICK_PERIOD_MS);
     float2digits(number, dig, ind.precision, ind.digits);
     for(int i = 0; i < ind.digits; i++) {
-        ChangeDigit();
+        OnDigit(i);
         PrintDigit(dig[i]);
-        if(ind.precision == i) {
+        if(ind.precision == i && ind.precision != 0) {
             SetDot();
         }
-        vTaskDelay(5);
+        vTaskDelay(ind.period_ms);
     }
+    ResetSegments();
+    ResetDigits();
+    xSemaphoreGive(mutex);
+}
+
+void indicator::SetDigit(uint8_t number, GPIO_TypeDef *GPIO, uint16_t GPIO_PIN) {
+    ind.digit[number - 1].GPIOx = GPIO;
+    ind.digit[number - 1].GPIO_PIN = GPIO_PIN;
 }
 
 // TODO add norm decoder
 void indicator::PrintDigit(uint8_t digit) {
-    ResetAllSegments();
+    ResetSegments();
     switch(digit) {
         case 0:
             Set(a | b | c | d | e | f);
@@ -88,17 +88,20 @@ void indicator::SetDot(void) {
 }
 
 
-void indicator::ChangeDigit(void) {
-    HAL_GPIO_WritePin(ind.digit[now].GPIOx, ind.digit[now].GPIO_PIN, GPIO_PIN_RESET);
-    if(now == (ind.digits - 1)) {
-        now = 0;
-    } else {
-        now++;
+void indicator::OnDigit(uint8_t digit) {
+    if(digit > 0) {
+        HAL_GPIO_WritePin(ind.digit[digit - 1].GPIOx, ind.digit[digit - 1].GPIO_PIN, GPIO_PIN_RESET);
     }
-    HAL_GPIO_WritePin(ind.digit[now].GPIOx, ind.digit[now].GPIO_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(ind.digit[digit].GPIOx, ind.digit[digit].GPIO_PIN, GPIO_PIN_SET);
 }
 
-void indicator::ResetAllSegments(void) {
+void indicator::ResetDigits(void) {
+    for(int i = 0; i < ind.digits; i++) {
+        HAL_GPIO_WritePin(ind.digit[i].GPIOx, ind.digit[i].GPIO_PIN, GPIO_PIN_RESET);
+    }
+}
+
+void indicator::ResetSegments(void) {
     Set(0b00000000);
 }
 

@@ -11,26 +11,41 @@
 #define dot 0b10000000
 #define DIG_NUM 8 // TODO Parametrize this
 
+#define IND_DIGIT_1 1
+#define IND_DIGIT_2 2
+#define IND_DIGIT_3 3
+#define IND_DIGIT_4 4
+
+#define IND_PRECISION_0 0
+#define IND_PRECISION_1 1
+#define IND_PRECISION_2 2
+#define IND_PRECISION_3 3
+
+#define IND_PERIOD_1_MS  1
+#define IND_PERIOD_5_MS  5
+#define IND_PERIOD_10_MS 10
+
 typedef struct {
     pin_t segment[8]; // a,b,c,d,e,f,d,dot
     pin_t digit[DIG_NUM];
     uint8_t digits;
-    uint8_t precision; 
+    uint8_t precision;
+    uint8_t period_ms;
 } indicator_t;
 
 class indicator {
 private:
     void PinInit(pin_t pin);
     void PrintDigit(uint8_t pin);
+    void OnDigit(uint8_t digit);
     void Set(uint8_t pin);
     void SetDot(void);
-    void ResetAllSegments(void);
-    void ChangeDigit(void);
+    void ResetSegments(void);
+    void ResetDigits(void);
     int dig[4] = {0, 0, 0, 0};
-    int now = -1;
 public:
     indicator_t ind;
-    indicator() {
+    indicator(uint8_t digits, uint8_t precision, uint8_t period_ms) {
         ind.segment[0] = {GPIOA, GPIO_PIN_0};
         ind.segment[1] = {GPIOA, GPIO_PIN_1};
         ind.segment[2] = {GPIOA, GPIO_PIN_2};
@@ -43,11 +58,11 @@ public:
         ind.digit[1] = {GPIOA, GPIO_PIN_9};
         ind.digit[2] = {GPIOA, GPIO_PIN_10};
         ind.digit[3] = {GPIOA, GPIO_PIN_11};
-        ind.precision = 1;
-        ind.digits = 4;
+        ind.precision = precision;
+        ind.digits = digits;
+        ind.period_ms = period_ms;
     }
-    void SetPrecision(uint8_t prec);
-    void SetDigits(uint8_t dig);
+    void SetDigit(uint8_t number, GPIO_TypeDef *GPIO, uint16_t GPIO_PIN);
     void Init(void);
     void Print(float number);
 };

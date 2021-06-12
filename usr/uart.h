@@ -34,7 +34,6 @@ public:
         buf_size = UART_QUEUE_LENGTH;
         UART_InitStructure.Instance = USART;
         UART_InitStructure.Init.BaudRate = baudrate;
-
         /*ClockInit();
         Init();
         semaphore = xSemaphoreCreateBinary();
