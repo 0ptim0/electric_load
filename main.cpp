@@ -49,7 +49,6 @@ void Print(void *pvParameters) {
 int main(void) {
     HAL_Init();
     Rcc1.Init();
-    //adc1.Init();
     xTaskCreate(Indicator, "Indicator", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
     xTaskCreate(Measurement, "Measurement", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     xTaskCreate(Print, "Print", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
