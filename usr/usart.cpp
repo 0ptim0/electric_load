@@ -1,6 +1,6 @@
 #include "usart.h"
 
-void usart::Init(){
+void usart::Init() {
     if(USART_InitStructure.Instance == USART1) {
         __HAL_RCC_USART1_CLK_ENABLE();
     } else if(USART_InitStructure.Instance == USART2) {
@@ -23,7 +23,7 @@ uint8_t usart::Transmit(uint8_t *pdata, uint16_t length) {
 }
 
 /*void uart::ClockInit() {
-    taskENTER_CRITICAL();
+    taskENTER_CRITICAL() ;
     if(usart_conf.USART == USART1) {
         LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_USART1);
         #define USART_IRQ1

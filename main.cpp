@@ -28,6 +28,7 @@ void Measurement(void *pvParameters) {
 
 void Print(void *pvParameters) {
     GPIO_InitTypeDef GPIO_InitStructure;
+    __HAL_RCC_GPIOB_CLK_ENABLE();
     GPIO_InitStructure.Pin = GPIO_PIN_10;
     GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
@@ -37,10 +38,11 @@ void Print(void *pvParameters) {
     GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
     Usart3.Init();
     HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
-    uint8_t buf = 15;
+    static uint8_t buf = 0;
     while(1){
-        vTaskDelay(1000);
+        vTaskDelay(1);
         Usart3.Transmit(&buf, 1);
+        buf++;
     }
 }
 
