@@ -1,9 +1,9 @@
 #include "stm32_conf.h"
 
 rcc Rcc1;
-adc Adc1;
+adc Adc1(ADC1);
 indicator Indicator1(IND_DIGIT_2, IND_PRECISION_1, IND_PERIOD_5_MS);
-//usart Usart2(USART2, 115200);
+usart Usart3(USART3, 115200);
 
 float value;
 
@@ -17,7 +17,7 @@ void Indicator(void *pvParameters) {
 }
 
 void Measurement(void *pvParameters) {
-    Adc1.Init(ADC1);
+    Adc1.Init();
     while(1){
         vTaskDelay(1000);
         value = Adc1.buf[0] * 3.3 / (0x0FFF);
@@ -26,17 +26,21 @@ void Measurement(void *pvParameters) {
     }
 }
 
-void vTask3(void *pvParameters) {
-    __HAL_RCC_GPIOC_CLK_ENABLE();
+void Print(void *pvParameters) {
     GPIO_InitTypeDef GPIO_InitStructure;
-    GPIO_InitStructure.Pin = GPIO_PIN_13;
-    GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStructure.Speed= GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
+    GPIO_InitStructure.Pin = GPIO_PIN_10;
+    GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
+    GPIO_InitStructure.Pin = GPIO_PIN_11;
+    GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+    Usart3.Init();
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
+    uint8_t buf = 15;
     while(1){
-        //usart2.Print("\nHELLO\n");
         vTaskDelay(1000);
-        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+        Usart3.Transmit(&buf, 1);
     }
 }
 
@@ -46,7 +50,7 @@ int main(void) {
     //adc1.Init();
     xTaskCreate(Indicator, "Indicator", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
     xTaskCreate(Measurement, "Measurement", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-    //xTaskCreate(vTask3, "Send", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(Print, "Print", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     vTaskStartScheduler();
     while(1){  
     }

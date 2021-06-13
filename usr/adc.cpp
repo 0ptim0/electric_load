@@ -2,17 +2,12 @@
 #include "gpio.h"
 #include "adc.h"
 
-void adc::Init(ADC_TypeDef *ADC){
-    ADC_InitStructure.Instance = ADC;
+void adc::Init(){
     if(ADC_InitStructure.Instance == ADC1) {
         __HAL_RCC_ADC1_CLK_ENABLE();
     } else if(ADC_InitStructure.Instance == ADC2) {
         __HAL_RCC_ADC2_CLK_ENABLE();
     }
-    ConfigInit();
-}
-//TODO Add parametrization
-void adc::ConfigInit(void) {
     ADC_ChannelConfTypeDef ADC_ChInitStructure;
     DMA_HandleTypeDef DMA_InitStructure;
 

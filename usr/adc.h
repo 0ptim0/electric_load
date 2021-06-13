@@ -8,8 +8,10 @@
 class adc {
 private:
     ADC_HandleTypeDef ADC_InitStructure;
-    void ConfigInit(void);
 public:
+    adc(ADC_TypeDef *ADC) {
+        ADC_InitStructure.Instance = ADC;
+    }
     uint16_t buf[2];
-    void Init(ADC_TypeDef *ADC);
+    void Init();
 };

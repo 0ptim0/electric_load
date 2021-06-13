@@ -1,4 +1,26 @@
-#include "uart.h"
+#include "usart.h"
+
+void usart::Init(){
+    if(USART_InitStructure.Instance == USART1) {
+        __HAL_RCC_USART1_CLK_ENABLE();
+    } else if(USART_InitStructure.Instance == USART2) {
+        __HAL_RCC_USART2_CLK_ENABLE();
+    } else if(USART_InitStructure.Instance == USART3) {
+        __HAL_RCC_USART3_CLK_ENABLE();
+    }
+
+    USART_InitStructure.Init.Mode = UART_MODE_TX_RX;
+    USART_InitStructure.Init.OverSampling = UART_OVERSAMPLING_16;
+    USART_InitStructure.Init.Parity = UART_PARITY_NONE;
+    USART_InitStructure.Init.StopBits = UART_STOPBITS_1;
+    USART_InitStructure.Init.WordLength = UART_WORDLENGTH_8B;
+    HAL_UART_Init(&USART_InitStructure);
+}
+
+uint8_t usart::Transmit(uint8_t *pdata, uint16_t length) {
+    HAL_StatusTypeDef status;
+    status = HAL_UART_Transmit(&USART_InitStructure, pdata, length, timeout);
+}
 
 /*void uart::ClockInit() {
     taskENTER_CRITICAL();
