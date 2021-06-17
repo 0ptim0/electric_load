@@ -38,10 +38,10 @@ void Print(void *pvParameters) {
     GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
     Usart3.Init();
     HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
-    static uint8_t buf = 48;
+    static uint8_t buf[8] = "Hello\n\r";
     while(1){
         vTaskDelay(1000);
-        Usart3.Transmit(&buf, 1);
+        Usart3.Transmit(buf, 8);
     }
 }
 
@@ -61,11 +61,8 @@ int main(void) {
     while(1){  
     }
 }
-
+extern "C" {
 void USART3_IRQHandler(void) {
-    while(0);
+    Usart3.Handle();
 }
-
-void SysTick_Handler(void) {
-    while(0);
 }

@@ -30,4 +30,5 @@ public:
     }
     void Init();
     int Transmit(uint8_t *pdata, uint16_t length);
+    int Handle();
 };
