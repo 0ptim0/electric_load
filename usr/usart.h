@@ -5,14 +5,16 @@
 #define UART_TRANSACTION_TIMEOUT_ms 1000
 #define UART_QUEUE_LENGTH 1024
 
+//void USART3_IRQHandler(void);
+
 class usart {
 private:
     UART_HandleTypeDef USART_InitStructure;
-    SemaphoreHandle_t semaphore;
-    SemaphoreHandle_t mutex;
-    QueueHandle_t queue;
     int timeout;
     int buf_size;
+    void Acquire();
+    void Release();
+public:
 public:
     usart(USART_TypeDef *USART, int baudrate) {
         timeout = UART_TRANSACTION_TIMEOUT_ms;
@@ -27,5 +29,5 @@ public:
         USART_InitStructure.Init.BaudRate = baudrate;
     }
     void Init();
-    uint8_t Transmit(uint8_t *pdata, uint16_t length);
+    int Transmit(uint8_t *pdata, uint16_t length);
 };

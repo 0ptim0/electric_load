@@ -38,11 +38,15 @@ void Print(void *pvParameters) {
     GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
     Usart3.Init();
     HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
-    static uint8_t buf = 0;
+    static uint8_t buf = 48;
     while(1){
-        vTaskDelay(1);
+        vTaskDelay(1000);
         Usart3.Transmit(&buf, 1);
-        buf++;
+    }
+}
+
+void Test(void *pvParameters) {
+    while(1) { 
     }
 }
 
@@ -51,8 +55,17 @@ int main(void) {
     Rcc1.Init();
     xTaskCreate(Indicator, "Indicator", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
     xTaskCreate(Measurement, "Measurement", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(Test, "Test", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     xTaskCreate(Print, "Print", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     vTaskStartScheduler();
     while(1){  
     }
+}
+
+void USART3_IRQHandler(void) {
+    while(0);
+}
+
+void SysTick_Handler(void) {
+    while(0);
 }

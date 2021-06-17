@@ -1,12 +1,32 @@
 #include "usart.h"
 
+SemaphoreHandle_t mutex;
+QueueHandle_t queue;
+
+void usart::Acquire() {
+    xSemaphoreTake(mutex, timeout);
+}
+
+void usart::Release() {
+    xSemaphoreGive(mutex);
+}
+
 void usart::Init() {
+    mutex = xSemaphoreCreateMutex();
+    queue = xQueueCreate(this->buf_size, sizeof(uint8_t));
     if(USART_InitStructure.Instance == USART1) {
         __HAL_RCC_USART1_CLK_ENABLE();
+        HAL_NVIC_EnableIRQ(USART1_IRQn);
+        NVIC_SetPriority(USART1_IRQn, 12);
     } else if(USART_InitStructure.Instance == USART2) {
         __HAL_RCC_USART2_CLK_ENABLE();
+        HAL_NVIC_EnableIRQ(USART2_IRQn);
+        NVIC_SetPriority(USART2_IRQn, 12);
     } else if(USART_InitStructure.Instance == USART3) {
         __HAL_RCC_USART3_CLK_ENABLE();
+        NVIC_SetPriorityGrouping(0);
+        NVIC_SetPriority(USART3_IRQn, 12);
+        //HAL_NVIC_EnableIRQ(USART3_IRQn);
     }
 
     USART_InitStructure.Init.Mode = UART_MODE_TX_RX;
@@ -17,9 +37,12 @@ void usart::Init() {
     HAL_UART_Init(&USART_InitStructure);
 }
 
-uint8_t usart::Transmit(uint8_t *pdata, uint16_t length) {
-    HAL_StatusTypeDef status;
-    status = HAL_UART_Transmit(&USART_InitStructure, pdata, length, timeout);
+int usart::Transmit(uint8_t *pdata, uint16_t length) {
+    LL_USART_EnableIT_TXE(USART3);
+    LL_USART_EnableIT_TC(USART3);
+    NVIC_EnableIRQ(USART3_IRQn);
+    LL_USART_Enable(USART3);
+    //HAL_UART_Transmit_IT(&USART_InitStructure, pdata, length);
 }
 
 /*void uart::ClockInit() {
