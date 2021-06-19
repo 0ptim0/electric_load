@@ -11,11 +11,13 @@ void indicator::Init(void) {
     for(int i = 0; i < 8; i++) {
         PinInit(ind.segment[i]);
     }
-    mutex = xSemaphoreCreateMutex();
+    if(mutex == NULL) {
+        mutex = xSemaphoreCreateMutex();
+    }
 }
 
 void indicator::Print(float number) {
-    xSemaphoreTake(mutex, portTICK_PERIOD_MS);
+    if(xSemaphoreTake(mutex, pdMS_TO_TICKS(ind.period_ms)) == pdTRUE) {
     float2digits(number, dig, ind.precision, ind.digits);
     for(int i = 0; i < ind.digits; i++) {
         OnDigit(i);
@@ -28,6 +30,8 @@ void indicator::Print(float number) {
     ResetSegments();
     ResetDigits();
     xSemaphoreGive(mutex);
+    }
+    portYIELD();
 }
 
 void indicator::SetDigit(uint8_t number, GPIO_TypeDef *GPIO, uint16_t GPIO_PIN) {

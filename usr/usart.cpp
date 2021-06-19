@@ -1,29 +1,22 @@
 #include "usart.h"
 
-SemaphoreHandle_t mutex;
-SemaphoreHandle_t semaphore;
-QueueHandle_t queue;
-
-void usart::Acquire() {
-    xSemaphoreTake(mutex, timeout);
-}
-
-void usart::Release() {
-    xSemaphoreGive(mutex);
-}
+static SemaphoreHandle_t mutex;
+static SemaphoreHandle_t semaphore;
+static QueueHandle_t queue;
 
 void usart::Init() {
-    mutex = xSemaphoreCreateMutex();
-    queue = xQueueCreate(this->buf_size, sizeof(uint8_t));
-    semaphore = xSemaphoreCreateBinary();
+    if(mutex == NULL) mutex = xSemaphoreCreateMutex();
+    if(queue == NULL) queue = xQueueCreate(this->length, sizeof(uint8_t));
+    if(semaphore == NULL) semaphore = xSemaphoreCreateBinary();
+
     if(USART_InitStructure.Instance == USART1) {
         __HAL_RCC_USART1_CLK_ENABLE();
-        HAL_NVIC_EnableIRQ(USART1_IRQn);
         NVIC_SetPriority(USART1_IRQn, 12);
+        HAL_NVIC_EnableIRQ(USART1_IRQn);
     } else if(USART_InitStructure.Instance == USART2) {
         __HAL_RCC_USART2_CLK_ENABLE();
-        HAL_NVIC_EnableIRQ(USART2_IRQn);
         NVIC_SetPriority(USART2_IRQn, 12);
+        HAL_NVIC_EnableIRQ(USART2_IRQn);
     } else if(USART_InitStructure.Instance == USART3) {
         __HAL_RCC_USART3_CLK_ENABLE();
         NVIC_SetPriorityGrouping(0);
@@ -40,17 +33,20 @@ void usart::Init() {
 }
 
 int usart::Transmit(uint8_t *pdata, uint16_t length) {
-    Acquire();
-    xSemaphoreGive(semaphore);
+    if(xSemaphoreTake(mutex, timeout) == pdTRUE) {
+        xSemaphoreGive(semaphore);
 
-    HAL_UART_Transmit_IT(&USART_InitStructure, pdata, length);
+        HAL_UART_Transmit_IT(&USART_InitStructure, pdata, length);
 
-    if(xSemaphoreTake(semaphore, pdMS_TO_TICKS(timeout)) == pdFALSE) {
-        Release();
-        return pdFALSE;
+        if(xSemaphoreTake(semaphore, pdMS_TO_TICKS(timeout)) == pdFALSE) {
+            xSemaphoreGive(mutex);
+            return pdFALSE;
+        } else {
+            xSemaphoreGive(mutex);
+            return pdTRUE;
+        }
     } else {
-        Release();
-        return pdTRUE;
+        return pdFALSE;
     }
 }
 // TODO Read error flags
@@ -59,9 +55,11 @@ int usart::Handle() {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
     HAL_UART_IRQHandler(&USART_InitStructure);
-
-    xSemaphoreGiveFromISR(semaphore, &xHigherPriorityTaskWoken);
-    if(xHigherPriorityTaskWoken == pdTRUE) {
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    if(USART_InitStructure.gState == HAL_UART_STATE_READY) {
+        xSemaphoreGiveFromISR(semaphore, &xHigherPriorityTaskWoken);
+        if(xHigherPriorityTaskWoken == pdTRUE) {
+            portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+        }
     }
 }
+
