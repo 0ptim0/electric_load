@@ -34,7 +34,7 @@ void Measurement(void *pvParameters) {
     }
 }
 
-void Print(void *pvParameters) {
+void Print1(void *pvParameters) {
     int status;
     GPIO_InitTypeDef GPIO_InitStructure;
     __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -47,10 +47,30 @@ void Print(void *pvParameters) {
     GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
     Usart3.Init();
     HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
-    static uint8_t buf[8] = "Hello\n\r";
+    static uint8_t buf1[8] = "Hello\n\r";
     while(1){
         vTaskDelay(1000);
-        status = Usart3.Transmit(buf, 8);
+        status = Usart3.Transmit(buf1, 8);
+    }
+}
+
+void Print2(void *pvParameters) {
+    int status;
+    GPIO_InitTypeDef GPIO_InitStructure;
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    GPIO_InitStructure.Pin = GPIO_PIN_10;
+    GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
+    GPIO_InitStructure.Pin = GPIO_PIN_11;
+    GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+    Usart3.Init();
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
+    static uint8_t buf2[8] = "ALARM\n\r";
+    while(1){
+        vTaskDelay(100);
+        status = Usart3.Transmit(buf2, 8);
     }
 }
 
@@ -60,7 +80,8 @@ int main(void) {
     xTaskCreate(IndicatorPrint1, "Indicator", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
     xTaskCreate(IndicatorPrint2, "Indicator", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
     xTaskCreate(Measurement, "Measurement", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-    xTaskCreate(Print, "Print", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(Print1, "Print1", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(Print2, "Print2", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     vTaskStartScheduler();
     while(1){  
     }
