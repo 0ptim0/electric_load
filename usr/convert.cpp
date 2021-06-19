@@ -1,5 +1,7 @@
+#include "stm32_base.h"
+
 // TODO work with dot: Think about form variables (bin or dec) and return value or change by link.
-void float2digits(float number, int (&dig)[4], int precision, int digits) {
+void float2digits(float number, uint8_t (&dig)[4], uint8_t precision, uint8_t digits) {
     int overflow = 0;
     switch (precision) {
         case 0:
@@ -30,4 +32,9 @@ void float2digits(float number, int (&dig)[4], int precision, int digits) {
     if((4 - digits) > 9) {
         dig[0] = -1;
     }
+}
+
+void float2uint8(float *number, uint8_t *buf) {
+    buf = (uint8_t *)number;
+    buf = (unsigned char *)number;
 }

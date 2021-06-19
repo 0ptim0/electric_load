@@ -42,7 +42,7 @@ private:
     void SetDot(void);
     void ResetSegments(void);
     void ResetDigits(void);
-    int dig[4];
+    uint8_t dig[4];
 public:
     indicator_t ind;
     indicator(uint8_t digits, uint8_t precision, uint8_t period_ms) {
