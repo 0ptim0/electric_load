@@ -34,7 +34,6 @@ void usart::Init() {
 
 int usart::Transmit(uint8_t *pdata, uint16_t length) {
     if(xSemaphoreTake(mutex, timeout) == pdTRUE) {
-        xSemaphoreGive(semaphore);
 
         HAL_UART_Transmit_IT(&USART_InitStructure, pdata, length);
 

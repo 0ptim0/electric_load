@@ -41,7 +41,7 @@ void UARTSend(void *pvParameters) {
     while(1) {
         vTaskDelay(1000);
         status = Usart3.Transmit((uint8_t *)(measurement + 1), 4);
-        //status = Usart3.Transmit((uint8_t *)measurement, 4);
+        status = Usart3.Transmit((uint8_t *)measurement, 4);
     }
 }
 
