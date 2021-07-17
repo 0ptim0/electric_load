@@ -13,3 +13,6 @@
 
 /** Handlers **/
 #include "general.h"
+
+/** Handmade STD **/
+#include "std.h"

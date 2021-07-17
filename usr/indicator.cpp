@@ -1,5 +1,4 @@
 #include "indicator.h"
-#include "convert.h"
 
 static SemaphoreHandle_t mutex;
 

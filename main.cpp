@@ -38,10 +38,21 @@ void UARTSend(void *pvParameters) {
     Usart3.Init();
     HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
 
+    char data[10] = {};
+
     while(1) {
         vTaskDelay(1000);
-        status = Usart3.Transmit((uint8_t *)(measurement + 1), 4);
-        status = Usart3.Transmit((uint8_t *)measurement, 4);
+        float2char(*(measurement), data, 3);
+        Usart3.Transmit((uint8_t *)"Voltage = ", 10);
+        Usart3.Transmit((uint8_t *)data, 10);
+        Usart3.Transmit((uint8_t *)("\n\r"), 2);
+
+        float2char(*(measurement + 1), data, 3);
+        Usart3.Transmit((uint8_t *)"Current = ", 10);
+        Usart3.Transmit((uint8_t *)data, 10);
+        Usart3.Transmit((uint8_t *)("\n\n\r"), 3);
+        //status = Usart3.Transmit((uint8_t *)(measurement + 1), 4);
+        //status = Usart3.Transmit((uint8_t *)measurement, 4);
     }
 }
 
@@ -54,6 +65,7 @@ int main(void) {
     while(1){  
     }
 }
+
 extern "C" {
 void USART3_IRQHandler(void) {
     Usart3.Handle();
