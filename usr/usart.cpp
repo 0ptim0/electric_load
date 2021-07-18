@@ -48,6 +48,28 @@ int usart::Transmit(uint8_t *pdata, uint16_t length) {
         return pdFALSE;
     }
 }
+
+int usart::Receive(uint8_t *pdata, uint16_t length) {
+    HAL_UART_Receive_IT(&USART_InitStructure, pdata, length);
+}
+
+void usart::EchoStart() {
+    HAL_UART_Receive_IT(&USART_InitStructure, &(this->echo_buf), 1);
+}
+
+void usart::RxCpltCallback() {
+    if(this->echo_buf == '\r') {
+        HAL_UART_Transmit_IT(&USART_InitStructure, (uint8_t *)"\r\n> ", 4);
+    } else {
+        HAL_UART_Transmit_IT(&USART_InitStructure, &(this->echo_buf), 1);
+    }
+    HAL_UART_Receive_IT(&USART_InitStructure, &(this->echo_buf), 1);
+}
+
+void usart::TxCpltCallback() {
+
+}
+
 // TODO Read error flags
 int usart::Handle() {
     static uint8_t buf;

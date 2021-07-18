@@ -12,6 +12,8 @@ private:
     UART_HandleTypeDef USART_InitStructure;
     int timeout;
     int length;
+    uint8_t echo_buf;
+    uint8_t rx_received;
 public:
     usart(USART_TypeDef *USART, int baudrate) {
         timeout = UART_TRANSACTION_TIMEOUT_ms;
@@ -27,5 +29,9 @@ public:
     }
     void Init();
     int Transmit(uint8_t *pdata, uint16_t length);
+    int Receive(uint8_t *pdata, uint16_t length);
+    void EchoStart();
+    void TxCpltCallback();
+    void RxCpltCallback();
     int Handle();
 };

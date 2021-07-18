@@ -30,19 +30,20 @@ void UARTSend(void *pvParameters) {
 
     GPIO_InitStructure.Pin = GPIO_PIN_10;
     GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_MEDIUM;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
     GPIO_InitStructure.Pin = GPIO_PIN_11;
-    GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
-    Usart3.Init();
+    GPIO_InitStructure.Mode = GPIO_MODE_AF_INPUT;
+    GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_MEDIUM;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
+    Usart3.Init();
 
     char data[10] = {};
-
+    //Usart3.Transmit((uint8_t *)"\r\n", 2);
+    Usart3.Transmit((uint8_t *)"\r\n> ", 4);
     while(1) {
         vTaskDelay(1000);
-        float2char(*(measurement), data, 3);
+        /*float2char(*(measurement), data, 3);
         Usart3.Transmit((uint8_t *)"Voltage = ", 10);
         Usart3.Transmit((uint8_t *)data, 10);
         Usart3.Transmit((uint8_t *)("\n\r"), 2);
@@ -50,24 +51,36 @@ void UARTSend(void *pvParameters) {
         float2char(*(measurement + 1), data, 3);
         Usart3.Transmit((uint8_t *)"Current = ", 10);
         Usart3.Transmit((uint8_t *)data, 10);
-        Usart3.Transmit((uint8_t *)("\n\n\r"), 3);
+        Usart3.Transmit((uint8_t *)("\n\n\r"), 3);*/
         //status = Usart3.Transmit((uint8_t *)(measurement + 1), 4);
         //status = Usart3.Transmit((uint8_t *)measurement, 4);
+    }
+}
+
+void UARTReceive(void *pvParameters) {
+    Usart3.EchoStart();
+    while(1) {
+        vTaskDelay(100);
     }
 }
 
 int main(void) {
     HAL_Init();
     Rcc1.Init();
-    xTaskCreate(IndicatorPrint, "Indicator", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-    xTaskCreate(UARTSend, "Sending", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(IndicatorPrint, "Indicator", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+    xTaskCreate(UARTSend, "Sending", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+    xTaskCreate(UARTReceive, "Receive", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     vTaskStartScheduler();
     while(1){  
     }
 }
 
 extern "C" {
-void USART3_IRQHandler(void) {
-    Usart3.Handle();
-}
+    void USART3_IRQHandler(void) {
+        Usart3.Handle();
+    }
+
+    void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+        Usart3.RxCpltCallback();
+    }
 }
