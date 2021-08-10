@@ -1,5 +1,5 @@
 #######################################################################
-# Makefile for STM32F1 board projects
+# Makefile for STM32 board projects
 
 OUTPATH = build
 PROJECT = $(OUTPATH)/electric_load
