@@ -14,5 +14,8 @@
 /** Handlers **/
 #include "general.h"
 
+/** ERRNO */
+#include "errno.h"
+
 /** Handmade STD **/
 #include "std.h"

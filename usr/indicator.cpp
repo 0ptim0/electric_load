@@ -17,18 +17,18 @@ void indicator::Init(void) {
 
 void indicator::Print(float number) {
     if(xSemaphoreTake(mutex, pdMS_TO_TICKS(ind.period_ms)) == pdTRUE) {
-    float2digits(number, dig, ind.precision, ind.digits);
-    for(int i = 0; i < ind.digits; i++) {
-        OnDigit(i);
-        PrintDigit(dig[i]);
-        if(ind.precision == i && ind.precision != 0) {
-            SetDot();
+        float2digits(number, dig, ind.precision, ind.digits);
+        for(int i = 0; i < ind.digits; i++) {
+            OnDigit(i);
+            PrintDigit(dig[i]);
+            if(ind.precision == i && ind.precision != 0) {
+                SetDot();
+            }
+            vTaskDelay(ind.period_ms);
         }
-        vTaskDelay(ind.period_ms);
-    }
-    ResetSegments();
-    ResetDigits();
-    xSemaphoreGive(mutex);
+        ResetSegments();
+        ResetDigits();
+        xSemaphoreGive(mutex);
     }
     portYIELD();
 }

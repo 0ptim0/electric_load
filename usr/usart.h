@@ -1,37 +1,29 @@
-#include "stm32_base.h"
-#include "gpio.h"
 #pragma once
+#include "stm32_base.h"
+#include "rcc_periph.h"
+#include "gpio.h"
 
-#define UART_TRANSACTION_TIMEOUT_ms 100
-#define UART_QUEUE_LENGTH 1024
-
-//void USART3_IRQHandler(void);
-
-class usart {
-private:
-    UART_HandleTypeDef USART_InitStructure;
+struct usart_cfg_t {
+    USART_TypeDef *USART;
+    const gpio_cfg_t *tx_cfg;
+    const gpio_cfg_t *rx_cfg;
+    int speed;
     int timeout;
-    int length;
-    uint8_t echo_buf;
-    uint8_t rx_received;
+};
+
+class usart_class : public rcc_periph_class
+{
+private:
+    const usart_cfg_t *const cfg;
+    UART_HandleTypeDef USART_InitStructure;
+private:
+    gpio_class TX;
+    gpio_class RX;
 public:
-    usart(USART_TypeDef *USART, int baudrate) {
-        timeout = UART_TRANSACTION_TIMEOUT_ms;
-        length = UART_QUEUE_LENGTH;
-        USART_InitStructure.Instance = USART;
-        USART_InitStructure.Init.BaudRate = baudrate;
-    }
-    usart(USART_TypeDef *USART, int baudrate, int max_length, int max_timeout) {
-        timeout = max_timeout;
-        length = max_length;
-        USART_InitStructure.Instance = USART;
-        USART_InitStructure.Init.BaudRate = baudrate;
-    }
-    void Init();
+    usart_class(const usart_cfg_t *const cfg);
+    int Init(void);
+    int ClockEnable(void);
     int Transmit(uint8_t *pdata, uint16_t length);
     int Receive(uint8_t *pdata, uint16_t length);
-    void EchoStart();
-    void TxCpltCallback();
-    void RxCpltCallback();
-    int Handle();
+    int Handler(void);
 };

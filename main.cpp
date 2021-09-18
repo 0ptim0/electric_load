@@ -42,8 +42,8 @@ void UARTSend(void *pvParameters) {
     //Usart3.Transmit((uint8_t *)"\r\n", 2);
     Usart3.Transmit((uint8_t *)"\r\n> ", 4);
     while(1) {
-        vTaskDelay(1000);
-        /*float2char(*(measurement), data, 3);
+        vTaskDelay(200);
+        float2char(*(measurement), data, 3);
         Usart3.Transmit((uint8_t *)"Voltage = ", 10);
         Usart3.Transmit((uint8_t *)data, 10);
         Usart3.Transmit((uint8_t *)("\n\r"), 2);
@@ -54,13 +54,6 @@ void UARTSend(void *pvParameters) {
         Usart3.Transmit((uint8_t *)("\n\n\r"), 3);*/
         //status = Usart3.Transmit((uint8_t *)(measurement + 1), 4);
         //status = Usart3.Transmit((uint8_t *)measurement, 4);
-    }
-}
-
-void UARTReceive(void *pvParameters) {
-    Usart3.EchoStart();
-    while(1) {
-        vTaskDelay(100);
     }
 }
 
