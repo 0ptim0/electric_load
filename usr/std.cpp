@@ -1,7 +1,7 @@
 #include "stm32_base.h"
 
 /* Function for convert float to char with max 3 digit after point */
-void float2char(float num, char *data, int prec) {
+void float2char(float number, char *data, int prec) {
     char s[10];
     int decimals, units;
     int scale = 1;
@@ -16,12 +16,12 @@ void float2char(float num, char *data, int prec) {
         scale *= 10;
     }
 
-    if(num < 0) {
-        decimals = (int)(num * -(prec)) % scale;
-        units = (int)(-1 * num);
+    if(number < 0) {
+        decimals = (int)(number * -(prec)) % scale;
+        units = (int)(-1 * number);
     } else {
-        decimals = (int)(num * scale) % scale;
-        units = (int)num;
+        decimals = (int)(number * scale) % scale;
+        units = (int)number;
     }
 
     for(i = 9; i > (9 - prec); i--) {
@@ -44,7 +44,7 @@ void float2char(float num, char *data, int prec) {
         units /= 10;
     }
 
-    if(num < 0) s[i] = '-';
+    if(number < 0) s[i] = '-';
     i++;
     for(int j = 0; (s[j + i] != '\0') && (j < 10); j++) {
         *(data + j) = s[j + i];

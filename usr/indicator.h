@@ -26,16 +26,16 @@
 #define IND_PERIOD_10_MS 10
 
 typedef struct {
-    pin_t segment[8]; // a,b,c,d,e,f,d,dot
-    pin_t digit[DIG_NUM];
+    gpio_cfg_t segment[8]; // a,b,c,d,e,f,d,dot
+    gpio_cfg_t digit[DIG_NUM];
     uint8_t digits;
     uint8_t precision;
     uint8_t period_ms;
-} indicator_t;
+} cfg_t;
 
 class indicator {
 private:
-    void PinInit(pin_t pin);
+    void PinInit(gpio_cfg_t pin);
     void PrintDigit(uint8_t pin);
     void OnDigit(uint8_t digit);
     void Set(uint8_t pin);
