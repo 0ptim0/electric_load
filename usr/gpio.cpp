@@ -1,6 +1,10 @@
 #include "stm32_base.h"
 #include "gpio.h"
 
+gpio_class::gpio_class() : cfg(nullptr) 
+{
+}
+
 gpio_class::gpio_class(const gpio_cfg_t *const cfg) : cfg(cfg) 
 {
 }
@@ -28,6 +32,15 @@ int gpio_class::SetConf(const gpio_cfg_t *const cfg)
     return 0;
 }
 
+void gpio_class::SetOn(void) 
+{
+    HAL_GPIO_WritePin(cfg->GPIO, cfg->GPIO_InitStructure.Pin, GPIO_PIN_SET);
+}
+
+void gpio_class::SetOff(void) 
+{   
+    HAL_GPIO_WritePin(cfg->GPIO, cfg->GPIO_InitStructure.Pin, GPIO_PIN_RESET);
+}
 
 int gpio_class::ClockEnable(void)
 {

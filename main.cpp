@@ -1,13 +1,5 @@
 #include "stm32_conf.h"
 
-rcc Rcc1;
-adc Adc1(ADC1);
-indicator Indicator1(IND_DIGIT_1, IND_PRECISION_0, IND_PERIOD_5_MS);
-indicator Indicator2(IND_DIGIT_1, IND_PRECISION_0, IND_PERIOD_5_MS);
-usart Usart3(USART3, 115200);
-
-float measurement[2] = {0, 0};
-
 void IndicatorPrint(void *pvParameters) {
     Adc1.Init();
     Indicator1.SetDigit(1, GPIOA, GPIO_PIN_8);
@@ -59,7 +51,7 @@ void UARTSend(void *pvParameters) {
 
 int main(void) {
     HAL_Init();
-    Rcc1.Init();
+    //Rcc1.Init();
     xTaskCreate(IndicatorPrint, "Indicator", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
     xTaskCreate(UARTSend, "Sending", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
     xTaskCreate(UARTReceive, "Receive", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
@@ -70,10 +62,6 @@ int main(void) {
 
 extern "C" {
     void USART3_IRQHandler(void) {
-        Usart3.Handle();
-    }
-
-    void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-        Usart3.RxCpltCallback();
+        //Usart3.Handle();
     }
 }

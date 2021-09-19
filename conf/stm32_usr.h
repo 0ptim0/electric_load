@@ -4,3 +4,4 @@
 #include "rcc_periph.h"
 #include "adc.h"
 #include "usart.h"
+#include "cfg.h"

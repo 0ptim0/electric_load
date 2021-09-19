@@ -2,29 +2,39 @@
 
 static SemaphoreHandle_t mutex;
 
-// TODO optimizate code
-void indicator::Init(void) {
-    for(int i = 0; i < ind.digits; i++) {
-        PinInit(ind.digit[i]);
-    }
+indicator_class::indicator_class(const indicator_cfg_t *const cfg) 
+            : cfg(cfg)           
+{
     for(int i = 0; i < 8; i++) {
-        PinInit(ind.segment[i]);
-    }
-    if(mutex == NULL) {
-        mutex = xSemaphoreCreateMutex();
+        seg[i].SetConf(&cfg->seg[i]);
+        if(i < cfg->digits) {
+            dig[i].SetConf(&cfg->dig[i]);
+        }
     }
 }
 
-void indicator::Print(float number) {
-    if(xSemaphoreTake(mutex, pdMS_TO_TICKS(ind.period_ms)) == pdTRUE) {
-        float2digits(number, dig, ind.precision, ind.digits);
-        for(int i = 0; i < ind.digits; i++) {
+int indicator_class::Init(void) {
+    int rv;
+    
+    for(int i = 0; i < 8; i++) {
+        seg[i].Init();
+        if(i < cfg->digits) {
+            dig[i].Init();
+        }
+    }
+    if(mutex == NULL) mutex = xSemaphoreCreateMutex();
+}
+
+void indicator_class::Print(float number) {
+    if(xSemaphoreTake(mutex, pdMS_TO_TICKS(cfg->timeout)) == pdTRUE) {
+        float2digits(number, digits, cfg->precision, cfg->digits);
+        for(int i = 0; i < cfg->digits; i++) {
             OnDigit(i);
-            PrintDigit(dig[i]);
-            if(ind.precision == i && ind.precision != 0) {
+            PrintDigit(digits[i]);
+            if(cfg->precision == i && cfg->precision != 0) {
                 SetDot();
             }
-            vTaskDelay(ind.period_ms);
+            vTaskDelay(cfg->timeout);
         }
         ResetSegments();
         ResetDigits();
@@ -33,13 +43,8 @@ void indicator::Print(float number) {
     portYIELD();
 }
 
-void indicator::SetDigit(uint8_t number, GPIO_TypeDef *GPIO, uint16_t GPIO_PIN) {
-    ind.digit[number - 1].GPIOx = GPIO;
-    ind.digit[number - 1].GPIO_PIN = GPIO_PIN;
-}
-
 // TODO add norm decoder
-void indicator::PrintDigit(uint8_t digit) {
+void indicator_class::PrintDigit(uint8_t digit) {
     ResetSegments();
     switch(digit) {
         case 0:
@@ -75,54 +80,35 @@ void indicator::PrintDigit(uint8_t digit) {
     }
 }
 
-void indicator::Set(uint8_t pin) {
+void indicator_class::Set(uint8_t pin) {
     for(int i = 0; i < 8; i++) {
         if(pin & (1 << i)) {
-            HAL_GPIO_WritePin(ind.segment[i].GPIOx, ind.segment[i].GPIO_PIN, GPIO_PIN_SET);
+            seg[i].SetOn();
         }
         else {
-            HAL_GPIO_WritePin(ind.segment[i].GPIOx, ind.segment[i].GPIO_PIN, GPIO_PIN_RESET);
+            seg[i].SetOff();
         }
     }
 }
 
-void indicator::SetDot(void) {
-    HAL_GPIO_WritePin(ind.segment[7].GPIOx, ind.segment[7].GPIO_PIN, GPIO_PIN_SET);
+void indicator_class::SetDot(void) {
+    seg[7].SetOn();
 }
 
 
-void indicator::OnDigit(uint8_t digit) {
+void indicator_class::OnDigit(uint8_t digit) {
     if(digit > 0) {
-        HAL_GPIO_WritePin(ind.digit[digit - 1].GPIOx, ind.digit[digit - 1].GPIO_PIN, GPIO_PIN_RESET);
+        dig[digit - 1].SetOff();
     }
-    HAL_GPIO_WritePin(ind.digit[digit].GPIOx, ind.digit[digit].GPIO_PIN, GPIO_PIN_SET);
+    dig[digit].SetOn();
 }
 
-void indicator::ResetDigits(void) {
-    for(int i = 0; i < ind.digits; i++) {
-        HAL_GPIO_WritePin(ind.digit[i].GPIOx, ind.digit[i].GPIO_PIN, GPIO_PIN_RESET);
+void indicator_class::ResetDigits(void) {
+    for(int i = 0; i < cfg->digits; i++) {
+        dig[i].SetOff();
     }
 }
 
-void indicator::ResetSegments(void) {
+void indicator_class::ResetSegments(void) {
     Set(0b00000000);
-}
-
-void indicator::PinInit(pin_t pin) {
-    GPIO_InitTypeDef GPIO_InitStructure;
-    if(pin.GPIOx == GPIOA) {
-        __HAL_RCC_GPIOA_CLK_ENABLE();
-    } else if(pin.GPIOx == GPIOB) {
-        __HAL_RCC_GPIOB_CLK_ENABLE();
-    } else if(pin.GPIOx == GPIOC) {
-        __HAL_RCC_GPIOC_CLK_ENABLE();
-    } else if(pin.GPIOx == GPIOD) {
-        __HAL_RCC_GPIOD_CLK_ENABLE();
-    } else if(pin.GPIOx == GPIOE) {
-        __HAL_RCC_GPIOE_CLK_ENABLE();
-    }
-    GPIO_InitStructure.Pin = pin.GPIO_PIN;
-    GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(pin.GPIOx, &GPIO_InitStructure);
 }

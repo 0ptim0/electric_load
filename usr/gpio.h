@@ -19,7 +19,10 @@ protected:
     const gpio_cfg_t *const cfg;
 public:
     gpio_class(const gpio_cfg_t *const cfg);
+    gpio_class();
     int Init(void);
     int SetConf(const gpio_cfg_t *const cfg);
+    void SetOn(void);
+    void SetOff(void);
     int ClockEnable(void);
 };
