@@ -2,7 +2,8 @@
 #include "gpio.h"
 #include "adc.h"
 
-void adc::Init(){
+void adc_class::Init()
+{
     if(ADC_InitStructure.Instance == ADC1) {
         __HAL_RCC_ADC1_CLK_ENABLE();
     } else if(ADC_InitStructure.Instance == ADC2) {

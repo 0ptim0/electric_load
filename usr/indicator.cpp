@@ -14,15 +14,19 @@ indicator_class::indicator_class(const indicator_cfg_t *const cfg)
 }
 
 int indicator_class::Init(void) {
-    int rv;
+    int rv = 0;
     
     for(int i = 0; i < 8; i++) {
-        seg[i].Init();
+        rv |= seg[i].Init();
         if(i < cfg->digits) {
-            dig[i].Init();
+            rv |= dig[i].Init();
         }
     }
+    
     if(mutex == NULL) mutex = xSemaphoreCreateMutex();
+    else return EINVAL;
+    
+    return rv;
 }
 
 void indicator_class::Print(float number) {

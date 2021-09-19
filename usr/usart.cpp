@@ -45,33 +45,6 @@ int usart_class::Init(void)
     return 0;
 }
 
-int usart_class::ClockEnable(void)
-{
-    switch(reinterpret_cast<uint32_t>(cfg->USART)) {
-
-#ifdef USART1
-        case USART1_BASE:
-            __HAL_RCC_USART1_CLK_ENABLE();
-            break;
-#endif
-
-#ifdef USART2
-        case USART2_BASE:
-            __HAL_RCC_USART2_CLK_ENABLE();
-            break;
-#endif
-
-#ifdef USART3
-        case USART3_BASE:
-            __HAL_RCC_USART3_CLK_ENABLE();
-            break;
-#endif
-        default:
-            return EINVAL;
-    }
-    return 0;
-}
-
 int usart_class::Transmit(uint8_t *pdata, uint16_t length) 
 {   
     if(xSemaphoreTake(mutex, cfg->timeout) == pdTRUE) {
@@ -119,5 +92,33 @@ int usart_class::Handler(void)
         if(xHigherPriorityTaskWoken == pdTRUE) {
             portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
         }
+    }
+    return 0;
+}
+
+int usart_class::ClockEnable(void)
+{
+    switch(reinterpret_cast<uint32_t>(cfg->USART)) {
+
+#ifdef USART1
+        case USART1_BASE:
+            __HAL_RCC_USART1_CLK_ENABLE();
+            break;
+#endif
+
+#ifdef USART2
+        case USART2_BASE:
+            __HAL_RCC_USART2_CLK_ENABLE();
+            break;
+#endif
+
+#ifdef USART3
+        case USART3_BASE:
+            __HAL_RCC_USART3_CLK_ENABLE();
+            break;
+#endif
+        default:
+            return EINVAL;
+    }
     return 0;
 }

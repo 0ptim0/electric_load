@@ -1,5 +1,6 @@
 #include "stm32_base.h"
 #include "gpio.h"
+#pragma once
 
 #define a   0b00000001
 #define b   0b00000010
@@ -26,11 +27,11 @@
 #define IND_PERIOD_10_MS 10
 
 struct indicator_cfg_t {
+    const gpio_cfg_t seg[8];
+    const gpio_cfg_t dig[4];
     uint8_t digits;
     uint8_t precision;
     uint8_t timeout;
-    const gpio_cfg_t seg[8];
-    const gpio_cfg_t dig[4];
 };
 
 class indicator_class {
@@ -39,7 +40,6 @@ private:
     gpio_class seg[8];
     gpio_class dig[4];
 private:
-    int Init(void);
     void PrintDigit(uint8_t pin);
     void OnDigit(uint8_t digit);
     void Set(uint8_t pin);
@@ -49,23 +49,7 @@ private:
     uint8_t digits[4];
 public:
     indicator_class(const indicator_cfg_t *const cfg);
-    // indicator(uint8_t digits, uint8_t precision, uint8_t period_ms) {
-    //     ind.segment[0] = {GPIOA, GPIO_PIN_0};
-    //     ind.segment[1] = {GPIOA, GPIO_PIN_1};
-    //     ind.segment[2] = {GPIOA, GPIO_PIN_2};
-    //     ind.segment[3] = {GPIOA, GPIO_PIN_3};
-    //     ind.segment[4] = {GPIOA, GPIO_PIN_4};
-    //     ind.segment[5] = {GPIOA, GPIO_PIN_5};
-    //     ind.segment[6] = {GPIOA, GPIO_PIN_6};
-    //     ind.segment[7] = {GPIOA, GPIO_PIN_7};
-    //     ind.digit[0] = {GPIOA, GPIO_PIN_8};
-    //     ind.digit[1] = {GPIOA, GPIO_PIN_9};
-    //     ind.digit[2] = {GPIOA, GPIO_PIN_10};
-    //     ind.digit[3] = {GPIOA, GPIO_PIN_11};
-    //     ind.precision = precision;
-    //     ind.digits = digits;
-    //     ind.period_ms = period_ms;
-    // }
+    int Init(void);
     void SetDigit(uint8_t number, GPIO_TypeDef *GPIO, uint16_t GPIO_PIN);
     void Print(float number);
 };

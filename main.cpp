@@ -1,60 +1,44 @@
 #include "stm32_conf.h"
 
+rcc_class rcc;
+adc_class adc(ADC1);
+usart_class usart(&usart_cfg);
+indicator_class indicator1(&indicator1_cfg);
+indicator_class indicator2(&indicator2_cfg);
+
+float meas[2];
+
 void IndicatorPrint(void *pvParameters) {
-    Adc1.Init();
-    Indicator1.SetDigit(1, GPIOA, GPIO_PIN_8);
-    Indicator2.SetDigit(1, GPIOA, GPIO_PIN_9);
-    Indicator1.Init();
-    Indicator2.Init();
+    adc.Init();
+    indicator1.Init();
+    indicator2.Init();
     while(1){
-        measurement[0] = Adc1.buf[0] * 3.3 / (0x0FFF);
-        measurement[1] = Adc1.buf[1] * 3.3 / (0x0FFF);
-        Indicator1.Print(measurement[0]);
-        Indicator2.Print(measurement[1]);
+        meas[0] = adc.buf[0] * ADC_SCALE;
+        meas[1] = adc.buf[1] * ADC_SCALE;
+        indicator1.Print(meas[0]);
+        indicator2.Print(meas[1]);
     }
 }
 
-void UARTSend(void *pvParameters) {
+void SendMeas(void *pvParameters) {
     int status;
+
     GPIO_InitTypeDef GPIO_InitStructure;
 
-    __HAL_RCC_GPIOB_CLK_ENABLE();
+    usart.Init();
 
-    GPIO_InitStructure.Pin = GPIO_PIN_10;
-    GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_MEDIUM;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
-    GPIO_InitStructure.Pin = GPIO_PIN_11;
-    GPIO_InitStructure.Mode = GPIO_MODE_AF_INPUT;
-    GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_MEDIUM;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
-    Usart3.Init();
-
-    char data[10] = {};
-    //Usart3.Transmit((uint8_t *)"\r\n", 2);
-    Usart3.Transmit((uint8_t *)"\r\n> ", 4);
     while(1) {
+        usart.Transmit((uint8_t *)(meas + 1), 4);
+        usart.Transmit((uint8_t *)(meas), 4);
         vTaskDelay(200);
-        float2char(*(measurement), data, 3);
-        Usart3.Transmit((uint8_t *)"Voltage = ", 10);
-        Usart3.Transmit((uint8_t *)data, 10);
-        Usart3.Transmit((uint8_t *)("\n\r"), 2);
-
-        float2char(*(measurement + 1), data, 3);
-        Usart3.Transmit((uint8_t *)"Current = ", 10);
-        Usart3.Transmit((uint8_t *)data, 10);
-        Usart3.Transmit((uint8_t *)("\n\n\r"), 3);*/
-        //status = Usart3.Transmit((uint8_t *)(measurement + 1), 4);
-        //status = Usart3.Transmit((uint8_t *)measurement, 4);
     }
 }
 
 int main(void) {
     HAL_Init();
-    //Rcc1.Init();
-    xTaskCreate(IndicatorPrint, "Indicator", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
-    xTaskCreate(UARTSend, "Sending", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
-    xTaskCreate(UARTReceive, "Receive", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    rcc.InitClock();
+    xTaskCreate(IndicatorPrint, "Indicator", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(SendMeas, "Sending", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     vTaskStartScheduler();
     while(1){  
     }
@@ -62,6 +46,6 @@ int main(void) {
 
 extern "C" {
     void USART3_IRQHandler(void) {
-        //Usart3.Handle();
+        usart.Handler();
     }
 }
