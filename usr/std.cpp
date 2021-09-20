@@ -53,7 +53,7 @@ void float2char(float number, char *data, int prec) {
 
 /* Function for convert float to 4 digits for semi indicator */
 // TODO work with dot: Think about form variables (bin or dec) and return value or change by link.
-void float2digits(float number, uint8_t (&dig)[4], uint8_t precision, uint8_t digits) {
+void float2digits(float number, uint8_t *dig, uint8_t precision, uint8_t digits) {
     int overflow = 0;
     switch (precision) {
         case 0:
