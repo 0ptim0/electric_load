@@ -28,8 +28,8 @@ void SendMeas(void *pvParameters) {
     usart.Init();
 
     while(1) {
-        usart.Transmit((uint8_t *)(meas + 1), 4);
         usart.Transmit((uint8_t *)(meas), 4);
+        usart.Transmit((uint8_t *)(meas + 1), 4);
         vTaskDelay(200);
     }
 }
