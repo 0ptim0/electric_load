@@ -15,11 +15,11 @@ indicator_class::indicator_class(const indicator_cfg_t *const cfg)
 
 int indicator_class::Init(void) {
     int rv = 0;
-    
+
     for(int i = 0; i < 8; i++) {
-        rv |= seg[i].Init();
+        rv |= seg[i].SetConf(&cfg->seg[i]);
         if(i < cfg->digits) {
-            rv |= dig[i].Init();
+            rv |= dig[i].SetConf(&cfg->dig[i]);
         }
     }
     
@@ -39,12 +39,13 @@ void indicator_class::Print(float number) {
                 SetDot();
             }
             vTaskDelay(cfg->timeout);
+            ResetDigits();
+            xSemaphoreGive(mutex);
+            portYIELD();
         }
         ResetSegments();
         ResetDigits();
-        xSemaphoreGive(mutex);
     }
-    portYIELD();
 }
 
 // TODO add norm decoder
