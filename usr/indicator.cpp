@@ -11,6 +11,7 @@ indicator_class::indicator_class(const indicator_cfg_t *const cfg)
             dig[i].SetConf(&cfg->dig[i]);
         }
     }
+    current_dig = cfg->digits;
 }
 
 int indicator_class::Init(void) {
@@ -30,22 +31,17 @@ int indicator_class::Init(void) {
 }
 
 void indicator_class::Print(float number) {
-    if(xSemaphoreTake(mutex, pdMS_TO_TICKS(cfg->timeout)) == pdTRUE) {
         float2digits(number, digits, cfg->precision, cfg->digits);
-        for(int i = 0; i < cfg->digits; i++) {
-            OnDigit(i);
-            PrintDigit(digits[i]);
-            if(cfg->precision == i && cfg->precision != 0) {
+        if(xSemaphoreTake(mutex, pdMS_TO_TICKS(10)) == pdTRUE) {
+                ResetSegments();
+                SwitchDigit();
+                PrintDigit(digits[current_dig - 1]);
                 SetDot();
-            }
-            vTaskDelay(cfg->timeout);
-            ResetDigits();
-            xSemaphoreGive(mutex);
-            portYIELD();
+                vTaskDelay(2);
+                ResetDigits();
+                xSemaphoreGive(mutex);
         }
-        ResetSegments();
-        ResetDigits();
-    }
+        vTaskDelay(1);
 }
 
 // TODO add norm decoder
@@ -88,32 +84,51 @@ void indicator_class::PrintDigit(uint8_t digit) {
 void indicator_class::Set(uint8_t pin) {
     for(int i = 0; i < 8; i++) {
         if(pin & (1 << i)) {
-            seg[i].SetOn();
-        }
-        else {
             seg[i].SetOff();
         }
+        else {
+            seg[i].SetOn();
+        }
     }
 }
 
-void indicator_class::SetDot(void) {
-    seg[7].SetOn();
-}
-
-
-void indicator_class::OnDigit(uint8_t digit) {
-    if(digit > 0) {
-        dig[digit - 1].SetOff();
+void indicator_class::SetDot(void) 
+{
+    if(cfg->precision == (current_dig - 1)) {
+        seg[7].SetOff();
     }
-    dig[digit].SetOn();
 }
 
-void indicator_class::ResetDigits(void) {
+void indicator_class::DigitOn(uint8_t digit) 
+{
+    dig[digit - 1].SetOn();
+}
+
+void indicator_class::DigitOff(uint8_t digit) 
+{
+    dig[digit - 1].SetOff();
+}
+
+void indicator_class::SwitchDigit(void) 
+{
+    previous_dig = current_dig;
+    if(previous_dig == cfg->digits) {
+        current_dig = 1;
+    } else {
+        current_dig = previous_dig + 1;
+    }
+    DigitOff(previous_dig);
+    DigitOn(current_dig);
+}
+
+void indicator_class::ResetDigits(void) 
+{
     for(int i = 0; i < cfg->digits; i++) {
         dig[i].SetOff();
     }
 }
 
-void indicator_class::ResetSegments(void) {
+void indicator_class::ResetSegments(void) 
+{
     Set(0b00000000);
 }

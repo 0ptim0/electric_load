@@ -31,11 +31,11 @@ void adc_class::Init()
     ADC_InitStructure.DMA_Handle = &DMA_InitStructure;
     HAL_DMA_Init(&DMA_InitStructure);
 
-    ADC_ChInitStructure.Channel = ADC_CHANNEL_8;
+    ADC_ChInitStructure.Channel = ADC_CHANNEL_1;
     ADC_ChInitStructure.Rank = ADC_REGULAR_RANK_1;
     ADC_ChInitStructure.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
     HAL_ADC_ConfigChannel(&ADC_InitStructure, &ADC_ChInitStructure);
-    ADC_ChInitStructure.Channel = ADC_CHANNEL_9;
+    ADC_ChInitStructure.Channel = ADC_CHANNEL_2;
     ADC_ChInitStructure.Rank = ADC_REGULAR_RANK_2;
     ADC_ChInitStructure.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
     HAL_ADC_ConfigChannel(&ADC_InitStructure, &ADC_ChInitStructure);

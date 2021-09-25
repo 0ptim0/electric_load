@@ -37,15 +37,19 @@ struct indicator_cfg_t {
 class indicator_class {
 private:
     const indicator_cfg_t *const cfg;
+    uint8_t previous_dig;
+    uint8_t current_dig;
     gpio_class seg[8];
     gpio_class dig[4];
 private:
     void PrintDigit(uint8_t pin);
-    void OnDigit(uint8_t digit);
     void Set(uint8_t pin);
     void SetDot(void);
     void ResetSegments(void);
     void ResetDigits(void);
+    void SwitchDigit(void);
+    void DigitOn(uint8_t digit);
+    void DigitOff(uint8_t digit);
     uint8_t digits[4];
 public:
     indicator_class(const indicator_cfg_t *const cfg);
