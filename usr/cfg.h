@@ -38,3 +38,6 @@ const indicator_cfg_t indicator2_cfg =
         {PIN_SEG_A, PIN_SEG_B, PIN_SEG_C, PIN_SEG_D, PIN_SEG_E, PIN_SEG_F, PIN_SEG_G, PIN_SEG_DOT},
         {PIN_DIG2_1, PIN_DIG2_2, PIN_DIG2_3, NULL}, IND_DIGIT_3, IND_PRECISION_1, IND_PERIOD_10_MS
     };
+
+#define LOAD_ADDR       0x40
+#define LOAD_TM_CMD     0x83

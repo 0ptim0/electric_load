@@ -7,8 +7,8 @@ indicator_class indicator1(&indicator1_cfg);
 indicator_class indicator2(&indicator2_cfg);
 
 struct meas_t {
-    float voltage;
-    float current;
+    uint32_t voltage;
+    uint32_t current;
 };
 
 meas_t meas;
@@ -16,8 +16,8 @@ meas_t meas;
 void Proccesing(void *pvParameters) {
     adc.Init();
     while(1){
-        meas.voltage = adc.buf[0] * ADC_SCALE;
-        meas.current = adc.buf[1] * ADC_SCALE;
+        meas.voltage = static_cast<uint32_t>(adc.buf[0] * ADC_SCALE * 1000);
+        meas.current = static_cast<uint32_t>(adc.buf[1] * ADC_SCALE * 1000);
         vTaskDelay(50);
     }
 }
@@ -37,16 +37,20 @@ void Indicator2Print(void *pvParameters) {
 }
 
 void SendMeas(void *pvParameters) {
-    int status;
-
-    GPIO_InitTypeDef GPIO_InitStructure;
+    wake_packet_t tm;
+    uint8_t buf[256];
 
     usart.Init();
 
+    tm.to = LOAD_ADDR;
+    tm.cmd = LOAD_TM_CMD;
+    tm.data = (uint8_t *)&meas;
+    tm.length = 8;
+    tm.buf = buf;
+
     while(1) {
-        usart.Transmit((uint8_t *)(&meas.voltage), 4);
-        usart.Transmit((uint8_t *)(&meas.current), 4);
-        vTaskDelay(200);
+        usart.Transmit(tm.buf, tm.length_buf);
+        vTaskDelay(50);
     }
 }
 
