@@ -1,13 +1,13 @@
 #include "wake.h"
 #include "crc.h"
 
-void wake::AddToBuf(uint8_t data) 
+void wake_class::AddToBuf(uint8_t data) 
 {
-    buf[iter] = data;
-    iter++;
+    buf[buf_length] = data;
+    buf_length++;
 }
 
-void wake::AddToPacket(uint8_t data) 
+void wake_class::AddToPacket(uint8_t data) 
 {
     switch(data) {
         case FEND:
@@ -24,25 +24,30 @@ void wake::AddToPacket(uint8_t data)
     }
 }
 
-void wake::TakeFromPacket(uint8_t *data) 
+uint8_t wake_class::TakeFromPacket(uint8_t *data) 
 {
-    if(buf[iter] == FESC && buf[iter + 1] == TFEND) {
-        *data = FEND;
-        iter = iter + 2;
-    } else if(buf[iter] == FESC && buf[iter + 1] == TFESC) {
-        *data = FESC;
-        iter = iter + 2;
+    uint8_t byte;
+    if(buf[buf_length] == FESC && buf[buf_length + 1] == TFEND) {
+        byte = FEND;
+        buf_length = buf_length + 2;
+    } else if(buf[buf_length] == FESC && buf[buf_length + 1] == TFESC) {
+        byte = FESC;
+        buf_length = buf_length + 2;
     } else {
-        *data = buf[iter];
-        iter++;
+        byte = buf[buf_length];
+        buf_length++;
     }
+    *data = byte;
+    return byte;
 }
 
-void wake::PacketBoxing(wake_packet_t *packet)
-{   
-    iter = 0;
-    buf = packet->buf;
-    if(packet == nullptr) return;
+uint8_t wake_class::Packing(wake_packet_t *packet)
+{
+    if(packet == nullptr) return ENXIO;
+    if(packet->length == 0) return EINVAL;
+
+    buf_length = 0;
+
     AddToBuf(FEND);
     AddToPacket(packet->to);
     AddToPacket(packet->cmd);
@@ -50,27 +55,42 @@ void wake::PacketBoxing(wake_packet_t *packet)
     for(int i = 0; i < packet->length; i++) {
         AddToPacket(packet->data[i]);
     }
-    AddToPacket(crc8(packet->data, packet->length));
-    packet->length_buf = iter;
-    iter = 0;
+    AddToPacket(crc8(buf, buf_length));
+    return 0;
 }
 
-void wake::PacketUnboxing(wake_packet_t *packet)
+uint8_t wake_class::Unpacking(wake_packet_t *packet)
 {
-    iter = 0;
-    buf = packet->buf;
-    if(packet == nullptr) return;
-    if(buf[0] != FEND) return;
-    iter++;
+    if(packet == nullptr) return ENXIO;
+    if(buf[0] != FEND) return EPROTO;
+
+    buf_length = 0;
+
+    buf_length++;
     TakeFromPacket(&packet->to);
     TakeFromPacket(&packet->cmd);
     TakeFromPacket(&packet->length);
     for(int i = 0; i < packet->length; i++) {
         TakeFromPacket(&packet->data[i]);
     }
-    uint8_t crc;
-    TakeFromPacket(&crc);
-    if(crc != crc8(packet->data, packet->length)) packet->err = ERROR;
-    packet->length_buf = iter;
-    iter = 0;
+    return CheckCRC();
+}
+
+uint8_t wake_class::GetBufLength(void)
+{
+    return buf_length;
+}
+
+uint8_t *wake_class::GetBufPtr(void)
+{
+    return buf;
+}
+
+uint8_t wake_class::CheckCRC(void)
+{
+    uint8_t crcr, crcc;
+    crcc = crc8(buf, buf_length);
+    crcr = TakeFromPacket(&crcr);
+    if(crcc != crcr) return EPROTO;
+    return 0;
 }
