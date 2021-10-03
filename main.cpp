@@ -25,30 +25,35 @@ void Proccesing(void *pvParameters) {
 }
 
 void Indicator1Print(void *pvParameters) {
+    float voltage;
     indicator1.Init();
-    while(1){
-        indicator1.Print(meas.voltage / 1000.0);
+    while(1) {
+        voltage = meas.voltage / 1000.0;
+        voltage = deadzone(voltage, 0.1, 0);
+        voltage = maxmin(voltage, MAX_VOLTAGE, MIN_VOLTAGE);
+        indicator1.Print(voltage);
     }
 }
 
 void Indicator2Print(void *pvParameters) {
+    float current;
     indicator2.Init();
-    while(1){
-        indicator2.Print(meas.current / 1000.0);
+    while(1) {
+        current = meas.current / 1000.0;
+        current = deadzone(current, 0.1, 0);
+        current = maxmin(current, MAX_CURRENT, MIN_CURRENT);
+        indicator2.Print(current);
     }
 }
 
 void SendMeas(void *pvParameters) {
-    uint8_t data[2];
-    data[0] =  0xAB;
-    data[1] =  0xCD;
 
     usart.Init();
 
     tm.to = LOAD_ADDR;
     tm.cmd = LOAD_TM_CMD;
-    tm.data = data;
-    tm.length = 2;
+    tm.data = (uint8_t *)&meas;
+    tm.length = 8;
 
     while(1) {
         if(!wake.Packing(&tm)) {

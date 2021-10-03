@@ -1,4 +1,5 @@
 #include "stm32_base.h"
+#include "std.h"
 #include "gpio.h"
 #pragma once
 

@@ -7,3 +7,6 @@
 #include "wake.h"
 #include "crc.h"
 #include "cfg.h"
+
+/** Handmade STD **/
+#include "std.h"
