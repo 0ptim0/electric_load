@@ -18,8 +18,8 @@ meas_t meas;
 void Proccesing(void *pvParameters) {
     adc.Init();
     while(1){
-        meas.voltage = static_cast<uint32_t>(adc.buf[0] * ADC_SCALE * 1000);
-        meas.current = static_cast<uint32_t>(adc.buf[1] * ADC_SCALE * 1000);
+        meas.voltage = static_cast<uint32_t>(adc.buf[1] * ADC_SCALE * 1000);
+        meas.current = static_cast<uint32_t>(adc.buf[0] * ADC_SCALE * 1000);
         vTaskDelay(50);
     }
 }
