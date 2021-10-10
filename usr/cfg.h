@@ -10,7 +10,7 @@
 #define MIN_CURRENT     0
 
 
-#define PIN_USART_TX    {GPIOB, {GPIO_PIN_10, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH}}
+#define PIN_USART_TX    {GPIOB, {GPIO_PIN_10, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH}}
 #define PIN_USART_RX    {GPIOB, {GPIO_PIN_11, GPIO_MODE_AF_INPUT, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH}}
 
 #define PIN_SEG_A       {GPIOA, {GPIO_PIN_3, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH}}
@@ -34,7 +34,7 @@
 const gpio_cfg_t tx = PIN_USART_TX;
 const gpio_cfg_t rx = PIN_USART_RX;
 
-const usart_cfg_t usart_cfg = {USART3, &tx, &rx, 115200, 100};
+const usart_cfg_t usart_cfg = {USART3, &tx, &rx, 115200, 25};
 
 const indicator_cfg_t indicator1_cfg = 
     {
