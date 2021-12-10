@@ -24,14 +24,15 @@ void Proccesing(void *pvParameters) {
     float adc_current;
 
     adc.Init();
+    
     while(1) {
-        adc_voltage = static_cast<uint32_t>(adc.buf[1] * ADC_SCALE * 1000);
-        adc_current = static_cast<uint32_t>(adc.buf[0] * ADC_SCALE * 1000);
+        adc_voltage = static_cast<uint32_t>(adc.buf[1] * ADC_SCALE * 1000 * LOAD_VOLTAGE_SENSE);
+        adc_current = static_cast<uint32_t>(adc.buf[0] * ADC_SCALE * 1000 * LOAD_CURRENT_SENSE);
         meas_filter.set_signal(in1, adc_voltage);
         meas_filter.set_signal(in2, adc_current);
         meas_filter.update();
-        meas.voltage = meas_filter.get_signal(out1);
-        meas.current = meas_filter.get_signal(out2);
+        meas.voltage = static_cast<uint32_t>(meas_filter.get_signal(out1));
+        meas.current = static_cast<uint32_t>(meas_filter.get_signal(out2));
         vTaskDelay(10);
     }
 }
@@ -39,7 +40,7 @@ void Proccesing(void *pvParameters) {
 void Indicator1Print(void *pvParameters) {
     indicator1.Init();
     while(1) {
-        voltage = meas.voltage / 1000.0 * 52.16279;
+        voltage = meas.voltage / 1000.0;
         voltage = deadzone(voltage, 0.1, 0);
         voltage = maxmin(voltage, MAX_VOLTAGE, MIN_VOLTAGE);
         if(voltage < 1) {
