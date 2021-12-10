@@ -57,4 +57,5 @@ public:
     int Init(void);
     void SetDigit(uint8_t number, GPIO_TypeDef *GPIO, uint16_t GPIO_PIN);
     void Print(float number);
+    void PrintNull(void);
 };

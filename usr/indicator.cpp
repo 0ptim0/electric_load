@@ -44,6 +44,19 @@ void indicator_class::Print(float number) {
         vTaskDelay(1);
 }
 
+void indicator_class::PrintNull(void) {
+        if(xSemaphoreTake(mutex, pdMS_TO_TICKS(10)) == pdTRUE) {
+                ResetSegments();
+                SwitchDigit();
+                ResetSegments();
+                Set(g);
+                vTaskDelay(2);
+                ResetDigits();
+                xSemaphoreGive(mutex);
+        }
+        vTaskDelay(1);
+}
+
 // TODO add norm decoder
 void indicator_class::PrintDigit(uint8_t digit) {
     ResetSegments();

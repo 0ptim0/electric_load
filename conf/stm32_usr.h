@@ -6,6 +6,9 @@
 #include "usart.h"
 #include "wake.h"
 #include "crc.h"
+#include "modules.h"
+#include "buf.h"
+#include "ma.h"
 #include "cfg.h"
 
 /** Handmade STD **/

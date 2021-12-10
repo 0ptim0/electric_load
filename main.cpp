@@ -8,6 +8,10 @@ indicator_class indicator2(&indicator2_cfg);
 wake_class wake;
 wake_packet_t tm;
 
+float current;
+float voltage;
+static filt_ma<2, 100, float> meas_filter;
+
 struct meas_t {
     uint32_t voltage;
     uint32_t current;
@@ -16,33 +20,47 @@ struct meas_t {
 meas_t meas;
 
 void Proccesing(void *pvParameters) {
+    float adc_voltage;
+    float adc_current;
+
     adc.Init();
-    while(1){
-        meas.voltage = static_cast<uint32_t>(adc.buf[1] * ADC_SCALE * 1000);
-        meas.current = static_cast<uint32_t>(adc.buf[0] * ADC_SCALE * 1000);
-        vTaskDelay(50);
+    while(1) {
+        adc_voltage = static_cast<uint32_t>(adc.buf[1] * ADC_SCALE * 1000);
+        adc_current = static_cast<uint32_t>(adc.buf[0] * ADC_SCALE * 1000);
+        meas_filter.set_signal(in1, adc_voltage);
+        meas_filter.set_signal(in2, adc_current);
+        meas_filter.update();
+        meas.voltage = meas_filter.get_signal(out1);
+        meas.current = meas_filter.get_signal(out2);
+        vTaskDelay(10);
     }
 }
 
 void Indicator1Print(void *pvParameters) {
-    float voltage;
     indicator1.Init();
     while(1) {
-        voltage = meas.voltage / 1000.0;
+        voltage = meas.voltage / 1000.0 * 52.16279;
         voltage = deadzone(voltage, 0.1, 0);
         voltage = maxmin(voltage, MAX_VOLTAGE, MIN_VOLTAGE);
-        indicator1.Print(voltage);
+        if(voltage < 1) {
+            indicator1.PrintNull();
+        } else {
+            indicator1.Print(voltage);
+        }
     }
 }
 
 void Indicator2Print(void *pvParameters) {
-    float current;
     indicator2.Init();
     while(1) {
         current = meas.current / 1000.0;
         current = deadzone(current, 0.1, 0);
         current = maxmin(current, MAX_CURRENT, MIN_CURRENT);
-        indicator2.Print(current);
+        if(voltage < 1) {
+            indicator2.PrintNull();
+        } else {
+            indicator2.Print(current);
+        }
     }
 }
 
